@@ -6,7 +6,7 @@ using PharmacyBL.Interfaces.Services;
 
 namespace Pharmacy.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;

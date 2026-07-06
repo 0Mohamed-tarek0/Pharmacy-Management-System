@@ -1,46 +1,100 @@
 ﻿@model Pharmacy.ViewModels.Suppliers.UpdateSupplierViewModel
 
-<h2>Edit Supplier</h2>
+@{
+    ViewData["Title"] = "Edit Supplier";
+}
 
-<form asp-action="Edit" method="post">
-
-    <input asp-for="Id" type="hidden" />
-
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="mb-3">
-        <label asp-for="CompanyName"></label>
-        <input asp-for="CompanyName" class="form-control" />
-        <span asp-validation-for="CompanyName" class="text-danger"></span>
+<div class="page-header">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-pen"></i>
+        </div>
+        <div>
+            <h1>Edit Supplier</h1>
+            <p class="page-subtitle">Update this supplier's information.</p>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
-        <span asp-validation-for="Address" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Phone"></label>
-        <input asp-for="Phone" class="form-control" />
-        <span asp-validation-for="Phone" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <button class="btn btn-success">
-        Update
-    </button>
-
-    <a asp-action="Index" class="btn btn-secondary">
-        Cancel
+    <a asp-action="Index" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-1"></i> Back to Suppliers
     </a>
+</div>
 
-</form>
+<div class="row">
+    <div class="col-lg-7">
+
+        <div class="card card-outline card-primary">
+
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-circle-info text-primary-teal"></i>
+                    Supplier Details
+                </h3>
+            </div>
+
+            <form asp-action="Edit" method="post" novalidate>
+
+                <div class="card-body">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+                    <input asp-for="Id" type="hidden" />
+
+                    <div class="mb-3">
+                        <label asp-for="CompanyName"></label>
+                        <div class="input-icon-group">
+                            <i class="fas fa-building"></i>
+                            <input asp-for="CompanyName" class="form-control" />
+                        </div>
+                        <span asp-validation-for="CompanyName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address"></label>
+                        <div class="input-icon-group">
+                            <i class="fas fa-location-dot"></i>
+                            <input asp-for="Address" class="form-control" />
+                        </div>
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Phone"></label>
+                            <div class="input-icon-group">
+                                <i class="fas fa-phone"></i>
+                                <input asp-for="Phone" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email"></label>
+                            <div class="input-icon-group">
+                                <i class="fas fa-envelope"></i>
+                                <input asp-for="Email" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card-footer d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-1"></i> Update Supplier
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-primary">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
 
 @section Scripts
 {

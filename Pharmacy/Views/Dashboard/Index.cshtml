@@ -1,1 +1,137 @@
-﻿<h1>Welcome to Pharmacy Dashboard</h1>
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="page-header">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-chart-pie"></i>
+        </div>
+        <div>
+            <h1>Welcome back, @User.Identity?.Name 👋</h1>
+            <p class="page-subtitle">Here's what's happening in your pharmacy today.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    <!-- Medicines -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card card-hover h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted mb-1">Medicines</h6>
+                        <h2 class="font-weight-bold mb-1">0</h2>
+                        <span class="stat-trend text-muted">No data yet</span>
+                    </div>
+                    <div class="dashboard-icon" style="background:var(--primary-color);">
+                        <i class="fas fa-capsules"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card card-hover h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted mb-1">Categories</h6>
+                        <h2 class="font-weight-bold mb-1">0</h2>
+                        <span class="stat-trend text-muted">No data yet</span>
+                    </div>
+                    <div class="dashboard-icon" style="background:var(--success-color);">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suppliers -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card card-hover h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted mb-1">Suppliers</h6>
+                        <h2 class="font-weight-bold mb-1">0</h2>
+                        <span class="stat-trend text-muted">No data yet</span>
+                    </div>
+                    <div class="dashboard-icon" style="background:var(--warning-color);">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales -->
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card card-hover h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted mb-1">Today's Sales</h6>
+                        <h2 class="font-weight-bold mb-1">0 EGP</h2>
+                        <span class="stat-trend text-muted">No data yet</span>
+                    </div>
+                    <div class="dashboard-icon" style="background:var(--danger-color);">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-lg-7 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-clock-rotate-left text-primary-teal"></i>
+                    Recent Activity
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="empty-state py-4">
+                    <div class="empty-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h5>Nothing to show yet</h5>
+                    <p>Activity like new sales, stock updates and orders will appear here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-bolt text-primary-teal"></i>
+                    Quick Actions
+                </h3>
+            </div>
+            <div class="card-body d-flex flex-column gap-2">
+                <a asp-controller="Category" asp-action="Create" class="btn btn-outline-primary text-start">
+                    <i class="fas fa-tags me-2"></i> Add New Category
+                </a>
+                <a asp-controller="Supplier" asp-action="Create" class="btn btn-outline-primary text-start">
+                    <i class="fas fa-truck me-2"></i> Add New Supplier
+                </a>
+                <a asp-controller="Users" asp-action="CreatePharmacist" class="btn btn-outline-primary text-start">
+                    <i class="fas fa-user-plus me-2"></i> Create Pharmacist Account
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
