@@ -9,8 +9,10 @@ namespace PharmacyDAL.Interfaces
 {
     public interface ISupplierRepository : IGenericRepository<Supplier>
     {
-        Task<Supplier> GetSupplierWithMedicinesAsync(int supplierId);
 
-        Task<Supplier> GetSupplierWithOrdersAsync(int supplierId);
+        Task<Supplier> GetSupplierWithRelationsAsync(int supplierId);
+        //Task<Supplier> GetSupplierWithMedicinesAsync(int supplierId);
+
+        //Task<Supplier> GetSupplierWithOrdersAsync(int supplierId);
     }
 }

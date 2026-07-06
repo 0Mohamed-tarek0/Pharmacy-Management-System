@@ -15,20 +15,28 @@ namespace PharmacyDAL.Repositories
         {
         }
 
-        public async Task<Supplier> GetSupplierWithMedicinesAsync(int supplierId)
-        {
-            return await _dbSet
-                .Include(s => s.MedicineSuppliers)
-                .ThenInclude(ms => ms.Medicine)
-                .SingleOrDefaultAsync(s => s.Id == supplierId);
-        }
-
-        public async Task<Supplier> GetSupplierWithOrdersAsync(int supplierId)
+        public async Task<Supplier> GetSupplierWithRelationsAsync(int supplierId)
         {
             return await _dbSet
                 .Include(s => s.Orders)
-                .ThenInclude(o => o.OrderItems)
+                .Include(s => s.MedicineSuppliers)
                 .SingleOrDefaultAsync(s => s.Id == supplierId);
         }
+
+        //public async Task<Supplier> GetSupplierWithMedicinesAsync(int supplierId)
+        //{
+        //    return await _dbSet
+        //        .Include(s => s.MedicineSuppliers)
+        //        .ThenInclude(ms => ms.Medicine)
+        //        .SingleOrDefaultAsync(s => s.Id == supplierId);
+        //}
+
+        //public async Task<Supplier> GetSupplierWithOrdersAsync(int supplierId)
+        //{
+        //    return await _dbSet
+        //        .Include(s => s.Orders)
+        //        .ThenInclude(o => o.OrderItems)
+        //        .SingleOrDefaultAsync(s => s.Id == supplierId);
+        //}
     }
 }
