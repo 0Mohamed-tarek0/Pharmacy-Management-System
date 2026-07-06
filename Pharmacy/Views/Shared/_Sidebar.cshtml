@@ -2,15 +2,14 @@
     <!-- Brand Logo -->
     <a asp-controller="Dashboard"
        asp-action="Index"
-       class="brand-link">
+       class="brand-link text-center border-0">
 
-        <img src="~/AdminLTE/dist/img/AdminLTELogo.png"
-             class="brand-image img-circle elevation-3"
-             style="opacity:.8">
+        <i class="fas fa-prescription-bottle-alt"
+           style="font-size:28px;color:white;"></i>
 
-        <span class="brand-text font-weight-light">
+        <span class="brand-text font-weight-bold ml-2">
 
-            Pharmacy System
+            PharmaCare
 
         </span>
 
@@ -19,13 +18,39 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
+
             <div class="image">
-                <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+
+                <div class="rounded-circle d-flex justify-content-center align-items-center"
+                     style="width:45px;
+                    height:45px;
+                    background:#14B8A6;
+                    color:white;
+                    font-weight:bold;">
+
+                    @User.Identity?.Name?.Substring(0, 1).ToUpper()
+
+                </div>
+
             </div>
+
             <div class="info">
-                <a href="#" class="d-block">@User.Identity?.Name</a>
+
+                <span class="d-block text-white">
+
+                    @User.Identity?.Name
+
+                </span>
+
+                <small style="color:#D1FAE5">
+
+                    Administrator
+
+                </small>
+
             </div>
+
         </div>
 
         
@@ -40,8 +65,7 @@
                     <a asp-controller="Dashboard"
                        asp-action="Index"
                        class="nav-link">
-
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <i class="nav-icon fas fa-chart-pie"></i>
 
                         <p>Dashboard</p>
 
@@ -69,9 +93,9 @@
                        asp-action="Index"
                        class="nav-link">
 
-                        <i class="nav-icon fas fa-user-plus"></i>
+                        <i class="nav-icon fas fa-tags"></i>
 
-                        <p>Catigories</p>
+                        <p>Categories</p>
 
                     </a>
 
@@ -96,7 +120,7 @@
                     <a href="#"
                        class="nav-link">
 
-                        <i class="nav-icon fas fa-pills"></i>
+                        <i class="nav-icon fas fa-capsules"></i>
 
                         <p>Medicines</p>
 
@@ -109,7 +133,7 @@
                     <a href="#"
                        class="nav-link">
 
-                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <i class="nav-icon fas fa-cash-register"></i>
 
                         <p>Sales</p>
 
@@ -122,11 +146,41 @@
                     <a href="#"
                        class="nav-link">
 
-                        <i class="nav-icon fas fa-file-medical"></i>
+                        <i class="nav-icon fas fa-file-invoice"></i>
 
                         <p>Purchase Orders</p>
 
                     </a>
+
+                </li>
+                <li class="nav-header">
+
+                    ACCOUNT
+
+                </li>
+
+                <li class="nav-item">
+
+                    <form asp-controller="Auth"
+                          asp-action="Logout"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="nav-link btn btn-link text-left w-100">
+
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+
+                            <p>
+
+                                Logout
+
+                            </p>
+
+                        </button>
+
+                    </form>
 
                 </li>
             </ul>

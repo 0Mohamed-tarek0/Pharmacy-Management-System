@@ -5,97 +5,120 @@
     Layout = "_Layout";
 }
 
+<div class="page-header">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <div>
+            <h1>Create Pharmacist</h1>
+            <p class="page-subtitle">Add a new pharmacist account with access to the system.</p>
+        </div>
+    </div>
+</div>
+
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success">
-        @TempData["Success"]
+        <i class="fas fa-circle-check"></i>
+        <span>@TempData["Success"]</span>
     </div>
 }
 
-<form asp-controller="Users" asp-action="CreatePharmacist" method="post">
+<div class="row">
+    <div class="col-lg-8">
 
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="card card-outline card-primary">
 
-    <div class="mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-id-card text-primary-teal"></i>
+                    Pharmacist Information
+                </h3>
+            </div>
 
-        <label asp-for="FullName"></label>
+            <form asp-controller="Users" asp-action="CreatePharmacist" method="post" novalidate>
 
-        <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
+                @Html.AntiForgeryToken()
 
+                <div class="card-body">
 
-        <span asp-validation-for="FullName"
-              class="text-danger"></span>
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FullName"></label>
+                            <div class="input-icon-group">
+                                <i class="fas fa-user"></i>
+                                <input asp-for="FullName" class="form-control" placeholder="Enter full name" />
+                            </div>
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="UserName"></label>
+                            <div class="input-icon-group">
+                                <i class="fas fa-at"></i>
+                                <input asp-for="UserName" class="form-control" placeholder="Choose a username" />
+                            </div>
+                            <span asp-validation-for="UserName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Email"></label>
+                            <div class="input-icon-group">
+                                <i class="fas fa-envelope"></i>
+                                <input asp-for="Email" class="form-control" placeholder="name@pharmacare.com" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PhoneNumber"></label>
+                            <div class="input-icon-group">
+                                <i class="fas fa-phone"></i>
+                                <input asp-for="PhoneNumber" class="form-control" placeholder="+20 1xx xxx xxxx" />
+                            </div>
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Password"></label>
+                            <div class="input-icon-group">
+                                <i class="fas fa-key"></i>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Enter password" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ConfirmPassword"></label>
+                            <div class="input-icon-group">
+                                <i class="fas fa-key"></i>
+                                <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password" />
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-1"></i> Create Pharmacist
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
     </div>
-
-    <div class="mb-3">
-
-        <label asp-for="UserName"></label>
-
-        <input asp-for="UserName" class="form-control" placeholder="Enter your username" />
-
-
-        <span asp-validation-for="UserName"
-              class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-
-        <label asp-for="Email"></label>
-
-        <input asp-for="Email" class="form-control" placeholder="Enter your email" />
-
-
-        <span asp-validation-for="Email"
-              class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-
-        <label asp-for="Password"></label>
-
-        <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
-
-        <span asp-validation-for="Password"
-              class="text-danger"></span>
-
-    </div>
-
-    <div class="mb-3">
-
-        <label asp-for="ConfirmPassword"></label>
-
-        <input asp-for="ConfirmPassword"
-               type="password"
-               class="form-control"
-               placeholder="Confirm password" />
-
-        <span asp-validation-for="ConfirmPassword"
-              class="text-danger"></span>
-
-    </div>
-
-    <div class="mb-3">
-
-        <label asp-for="PhoneNumber"></label>
-
-        <input asp-for="PhoneNumber" class="form-control" placeholder="Enter your phone number" />
-
-
-        <span asp-validation-for="PhoneNumber"
-              class="text-danger"></span>
-
-    </div>
-
-    <button type="submit"
-            class="btn btn-primary w-100">
-
-        Create
-
-    </button>
-
-
-</form>
+</div>
 
 @section Scripts
 {

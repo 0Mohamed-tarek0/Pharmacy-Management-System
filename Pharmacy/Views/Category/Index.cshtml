@@ -1,122 +1,128 @@
 ﻿@model IEnumerable<PharmacyBL.DTOs.Categories.CategoryDto>
 
-<h2>Categories</h2>
+@{
+    ViewData["Title"] = "Categories";
+}
 
-<a asp-action="Create"
-   class="btn btn-success mb-3">
+<div class="page-header">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-tags"></i>
+        </div>
+        <div>
+            <h1>Categories</h1>
+            <p class="page-subtitle">Organize your medicines into categories for easier management.</p>
+        </div>
+    </div>
 
-    <i class="fas fa-plus"></i>
-
-    Add Category
-
-</a>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Add Category
+    </a>
+</div>
 
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success">
-        @TempData["Success"]
+        <i class="fas fa-circle-check"></i>
+        <span>@TempData["Success"]</span>
     </div>
 }
 
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">
-        @TempData["Error"]
+        <i class="fas fa-circle-exclamation"></i>
+        <span>@TempData["Error"]</span>
     </div>
 }
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
+<div class="card">
 
-        No Categories Found.
-
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-list text-primary-teal"></i>
+            All Categories
+        </h3>
+        <span class="badge badge-soft-primary">@Model.Count() total</span>
     </div>
-}
-else
-{
-    <div class="card">
 
-        <div class="card-header">
+    <div class="card-body p-0">
 
-            <h3 class="card-title">
-                Categories
-            </h3>
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <h5>No categories yet</h5>
+                <p>Start organizing your inventory by adding your first category.</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Add Category
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
 
-        </div>
-
-        <div class="card-body">
-
-            <table class="table table-bordered">
-
-                <thead>
-
-                    <tr>
-
-                        <th>ID</th>
-
-                        <th>Name</th>
-
-                        <th>Description</th>
-                        <th>Actions</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @foreach (var item in Model)
-                    {
+                    <thead>
                         <tr>
-
-                            <td>@item.Id</td>
-
-                            <td>@item.Name</td>
-
-                            <td>@item.Description</td>
-                            <td>
-
-                                <a asp-action="Edit"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-warning btn-sm">
-
-                                    <i class="fas fa-edit"></i>
-
-                                </a>
-
-                                <form asp-action="Delete"
-                                      asp-route-id="@item.Id"
-                                      method="post"
-                                      style="display:inline;">
-
-                                    <button type="submit"
-                                            class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Are you sure you want to delete this category?');">
-
-                                        <i class="fas fa-trash"></i>
-
-                                    </button>
-
-                                </form>
-
-                            </td>
-
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th class="text-end pe-4">Actions</th>
                         </tr>
-                    }
+                    </thead>
 
-                </tbody>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-muted">#@item.Id</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-circle">
+                                            <i class="fas fa-tag" style="font-size:14px;"></i>
+                                        </div>
+                                        <span class="fw-semibold">@item.Name</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted">@(string.IsNullOrWhiteSpace(item.Description) ? "—" : item.Description)</td>
+                                <td class="text-end pe-3">
 
-            </table>
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-outline-primary btn-sm btn-icon"
+                                       title="Edit">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
 
-        </div>
+                                    <form asp-action="Delete"
+                                          asp-route-id="@item.Id"
+                                          method="post"
+                                          class="d-inline">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm btn-icon"
+                                                title="Delete"
+                                                onclick="return confirm('Are you sure you want to delete this category?');">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        }
 
     </div>
 
-    @* @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">
-            @TempData["Success"]
-        </div>
-    } *@
-}
+</div>

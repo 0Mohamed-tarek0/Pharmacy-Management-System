@@ -4,90 +4,73 @@
     ViewData["Title"] = "Edit Category";
 }
 
-<section class="content-header">
-    <div class="container-fluid">
-        <h1>Edit Category</h1>
+<div class="page-header">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-pen"></i>
+        </div>
+        <div>
+            <h1>Edit Category</h1>
+            <p class="page-subtitle">Update the details of this category.</p>
+        </div>
     </div>
-</section>
 
-<section class="content">
+    <a asp-action="Index" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-1"></i> Back to Categories
+    </a>
+</div>
 
-    <div class="container-fluid">
+<div class="row">
+    <div class="col-lg-7">
 
-        <div class="card card-primary">
+        <div class="card card-outline card-primary">
 
             <div class="card-header">
-
                 <h3 class="card-title">
-                    New Category
+                    <i class="fas fa-circle-info text-primary-teal"></i>
+                    Category Details
                 </h3>
-
             </div>
 
-            <form asp-action="Edit" method="post">
+            <form asp-action="Edit" method="post" novalidate>
 
                 <div class="card-body">
-                    <div asp-validation-summary="ModelOnly"
-                         class="text-danger">
-                    </div>
-                   
-                    <div class="form-group">
-                        <input asp-for="Id" type="hidden" />
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+                    <input asp-for="Id" type="hidden" />
+
+                    <div class="mb-3">
                         <label asp-for="Name"></label>
-
-                        <input asp-for="Name"
-                               class="form-control"
-                               placeholder="Enter category name" />
-
-                        <span asp-validation-for="Name"
-                              class="text-danger">
-                        </span>
-
+                        <input asp-for="Name" class="form-control" placeholder="e.g. Pain Relief, Antibiotics" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
                     </div>
 
-                    <div class="form-group">
-
+                    <div class="mb-3">
                         <label asp-for="Description"></label>
-
-                        <textarea asp-for="Description"
-                                  rows="4"
-                                  class="form-control"
-                                  placeholder="Enter description">
-                         </textarea>
-
-                        <span asp-validation-for="Description"
-                              class="text-danger">
-                        </span>
-
+                        <textarea asp-for="Description" rows="4" class="form-control" placeholder="Short description of this category (optional)"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
                     </div>
 
-                    <div class="card-footer">
+                </div>
 
-                        <button type="submit"
-                                class="btn btn-primary">
+                <div class="card-footer d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-1"></i> Update Category
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-primary">
+                        Cancel
+                    </a>
+                </div>
 
-                            Update
-
-                        </button>
-
-                        <a asp-action="Index"
-                           class="btn btn-secondary">
-
-                            Cancel
-
-                        </a>
-
-                    </div>
-
-                </form>
-
-            </div>
+            </form>
 
         </div>
 
-    </section>
+    </div>
+</div>
 
-    @section Scripts
-    {
-        <partial name="_ValidationScriptsPartial" />
-    }
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
