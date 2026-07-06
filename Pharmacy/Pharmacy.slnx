@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../PharmacyBL/PharmacyBL.csproj" />
+  <Project Path="../PharmacyDAL/PharmacyDAL.csproj" />
+  <Project Path="Pharmacy.csproj" />
+</Solution>

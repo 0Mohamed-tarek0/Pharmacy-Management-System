@@ -1,0 +1,17 @@
+﻿using PharmacyBL.DTOs.Categories;
+
+namespace PharmacyBL.Interfaces.Services
+{
+    public interface ICategoryService
+    {
+        Task<IEnumerable<CategoryDto>> GetAllAsync();
+
+        Task<CategoryDto?> GetByIdAsync(int id);
+
+        Task<bool> CreateAsync(CreateCategoryDto dto);
+
+        Task<bool> UpdateAsync(UpdateCategoryDto dto);
+
+        Task<bool> DeleteAsync(int id);
+    }
+}
