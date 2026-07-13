@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -68,6 +68,16 @@ namespace PharmacyDAL.Repositories
             return await _dbSet
                 .Include(m => m.Category)
                 .Include(m => m.Batches)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Medicine>> GetAllWithDetailsAsync()
+        {
+            return await _dbSet
+                .Include(m => m.Category)
+                .Include(m => m.Batches)
+                .Include(m => m.Units)
                 .AsNoTracking()
                 .ToListAsync();
         }

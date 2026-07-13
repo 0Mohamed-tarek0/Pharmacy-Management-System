@@ -1,0 +1,162 @@
+@model PharmacyBL.DTOs.Sales.SaleDetailsDto
+
+@{
+    ViewData["Title"] = $"Invoice {Model.InvoiceNumber}";
+}
+
+<div class="page-header d-print-none">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <div>
+            <h1>Invoice details</h1>
+            <p class="page-subtitle">Invoice receipt #@Model.InvoiceNumber</p>
+        </div>
+    </div>
+
+    <div>
+        <button onclick="window.print();" class="btn btn-success me-2">
+            <i class="fas fa-print me-1"></i> Print Receipt
+        </button>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Sales
+        </a>
+    </div>
+</div>
+
+<div class="card card-outline card-teal invoice-container">
+    <div class="card-body">
+        
+        <!-- Receipt Header -->
+        <div class="row mb-4">
+            <div class="col-sm-6">
+                <h4 class="text-primary-teal font-weight-bold mb-1">
+                    <i class="fas fa-prescription-bottle-alt me-2"></i> PharmaCare Pharmacy
+                </h4>
+                <p class="text-muted mb-0">Quality Healthcare & Medicine</p>
+                <small class="text-muted">123 Health Avenue, Cairo, Egypt</small>
+            </div>
+            <div class="col-sm-6 text-sm-right mt-3 mt-sm-0">
+                <h5 class="text-dark font-weight-bold mb-0">SALES INVOICE</h5>
+                <span class="badge bg-success">@Model.Status</span>
+                <div class="mt-2 text-muted">
+                    <strong>Invoice #:</strong> @Model.InvoiceNumber <br />
+                    <strong>Date:</strong> @Model.InvoiceDate.ToString("yyyy-MM-dd HH:mm")
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <!-- Cashier Details -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6 class="text-muted text-uppercase font-weight-bold mb-2">Cashier / Pharmacist</h6>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle d-flex justify-content-center align-items-center bg-teal-light text-primary-teal font-weight-bold" style="width: 32px; height: 32px;">
+                        @Model.CashierName.Substring(0, 1).ToUpper()
+                    </div>
+                    <span class="font-weight-semibold text-dark">@Model.CashierName</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="table-responsive mb-4">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th style="width: 5%">#</th>
+                        <th>Medicine Description</th>
+                        <th class="text-center" style="width: 15%">Quantity</th>
+                        <th class="text-right" style="width: 15%">Unit Price</th>
+                        <th class="text-right" style="width: 15%">Discount</th>
+                        <th class="text-right" style="width: 15%">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int index = 1;
+                        decimal subtotal = 0;
+                        decimal totalDiscount = 0;
+                    }
+                    @foreach (var item in Model.Items)
+                    {
+                        var lineRevenue = (item.Quantity * item.UnitPrice);
+                        subtotal += lineRevenue;
+                        totalDiscount += item.Discount;
+                        <tr>
+                            <td>@index</td>
+                            <td class="font-weight-semibold text-dark">@item.MedicineName</td>
+                            <td class="text-center">@item.Quantity</td>
+                            <td class="text-right">@item.UnitPrice.ToString("N2") EGP</td>
+                            <td class="text-right text-danger">- @item.Discount.ToString("N2") EGP</td>
+                            <td class="text-right font-weight-bold">@item.Total.ToString("N2") EGP</td>
+                        </tr>
+                        index++;
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Totals Column -->
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <table class="table table-bordered table-sm text-dark">
+                    <tr>
+                        <th class="text-left font-weight-semibold">Subtotal</th>
+                        <td class="text-right">@subtotal.ToString("N2") EGP</td>
+                    </tr>
+                    @if (totalDiscount > 0)
+                    {
+                        <tr>
+                            <th class="text-left font-weight-semibold text-danger">Total Discounts</th>
+                            <td class="text-right text-danger">- @totalDiscount.ToString("N2") EGP</td>
+                        </tr>
+                    }
+                    <tr class="bg-light">
+                        <th class="text-left font-weight-bold text-lg">Grand Total</th>
+                        <td class="text-right font-weight-bold text-lg text-primary-teal">@Model.TotalAmount.ToString("N2") EGP</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Invoice Footer Note -->
+        <div class="text-center mt-5 text-muted small">
+            <p>Thank you for choosing PharmaCare! Medicines cannot be returned without a receipt.</p>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .bg-teal-light {
+        background-color: var(--primary-light);
+    }
+    @@media print {
+        body {
+            background-color: white !important;
+            color: black !important;
+        }
+        .main-sidebar, .main-header, .main-footer, .d-print-none {
+            display: none !important;
+        }
+        .content-wrapper {
+            margin-left: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+        }
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .card-body {
+            padding: 0 !important;
+        }
+        .invoice-container {
+            border: none !important;
+        }
+    }
+</style>
