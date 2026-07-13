@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PharmacyBL\PharmacyBL.csproj" />
-    <ProjectReference Include="..\PharmacyDAL\PharmacyDAL.csproj" />
   </ItemGroup>
 
   <ItemGroup>

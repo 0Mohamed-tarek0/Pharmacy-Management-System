@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PharmacyDAL.Interfaces;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace PharmacyDAL.UnitOfWork
 {
@@ -14,7 +15,10 @@ namespace PharmacyDAL.UnitOfWork
         ISupplierRepository Suppliers { get; }
         ISaleRepository Sales { get; }
         IOrderRepository Orders { get; }
-
+        IMedicineBatchRepository MedicineBatches { get; }
+        IStockTransactionRepository StockTransactions { get; }
         Task<int> SaveChangesAsync();
+
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

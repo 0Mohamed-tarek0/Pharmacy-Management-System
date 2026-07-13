@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PharmacyDAL.Enums;
 
 namespace PharmacyDAL.Models
 {
@@ -22,7 +23,7 @@ namespace PharmacyDAL.Models
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
 
-        public string Status { get; set; }
+        public OrderStatus Status { get; set; }
 
         public decimal TotalAmount { get; set; }
 

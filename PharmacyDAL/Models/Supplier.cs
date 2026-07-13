@@ -22,5 +22,6 @@ namespace PharmacyDAL.Models
         // Navigation properties
         public ICollection<Order> Orders { get; set; } = new List<Order>();
         public ICollection<MedicineSupplier> MedicineSuppliers { get; set; } = new List<MedicineSupplier>();
+        public ICollection<MedicineBatch> Batches { get; set; } = new List<MedicineBatch>();
     }
 }

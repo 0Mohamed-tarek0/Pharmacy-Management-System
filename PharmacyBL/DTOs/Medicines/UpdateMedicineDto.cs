@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using PharmacyDAL.Enums;
+
+namespace PharmacyBL.DTOs.Medicines
+{
+    public class UpdateMedicineDto
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public MedicineType Type { get; set; }
+
+        public string? Description { get; set; }
+
+        [Range(0, 100000)]
+        public int MinimumStock { get; set; }
+
+        public string? Barcode { get; set; }
+
+        public string? ImagePath { get; set; }
+
+        [Required]
+        public int CategoryId { get; set; }
+    }
+}

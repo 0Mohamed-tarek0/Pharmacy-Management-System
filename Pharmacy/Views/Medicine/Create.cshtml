@@ -1,0 +1,109 @@
+﻿@model PharmacyBL.DTOs.Medicines.CreateMedicineDto
+
+@using PharmacyBL.DTOs.Categories
+@using PharmacyDAL.Enums
+
+@{
+    ViewData["Title"] = "Add Medicine";
+}
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-title">Add New Medicine</h3>
+    </div>
+
+    <form asp-action="Create" method="post">
+
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Name"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Type"></label>
+                        <select asp-for="Type" class="form-control" asp-items="Html.GetEnumSelectList<MedicineType>()">
+                            <option value="">Select Type</option>
+                        </select>
+                        <span asp-validation-for="Type" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="BaseUnitName"></label>
+                        <input asp-for="BaseUnitName" class="form-control" placeholder="e.g. Strip, Ampoule, Tube, Bottle" />
+                        <small class="form-text text-muted">
+                            The smallest unit this medicine is ever sold in. Stock is always kept in this unit.
+                            Additional pack sizes (e.g. Box = 10 Strips) can be added from the Medicine Details page.
+                        </small>
+                        <span asp-validation-for="BaseUnitName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="MinimumStock"></label>
+                        <input asp-for="MinimumStock" class="form-control" />
+                        <small class="form-text text-muted">Reorder threshold, in base units, across all batches.</small>
+                        <span asp-validation-for="MinimumStock" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select asp-for="CategoryId"
+                                class="form-control"
+                                asp-items="@(new SelectList((IEnumerable<CategoryDto>)ViewBag.Categories, "Id", "Name"))">
+                            <option value="">Select Category</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="Barcode"></label>
+                        <input asp-for="Barcode" class="form-control" />
+                        <span asp-validation-for="Barcode" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description" rows="4" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="alert alert-info">
+                Prices, expiry dates and quantities are <strong>not</strong> set here - they belong to each
+                purchased batch and are entered when receiving a Purchase Order.
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <button type="submit" class="btn btn-success">Save</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

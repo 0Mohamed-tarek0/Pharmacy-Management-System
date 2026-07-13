@@ -17,6 +17,8 @@ namespace PharmacyDAL.Interfaces
 
         Task<IEnumerable<Order>> GetOrdersByUserAsync(string applicationUserId);
 
-        Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status);
+        Task<IEnumerable<Order>> GetAllWithDetailsAsync();
+
+        //Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status);
     }
 }

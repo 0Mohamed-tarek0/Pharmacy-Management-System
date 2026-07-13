@@ -46,11 +46,19 @@ namespace PharmacyDAL.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status)
+        public async Task<IEnumerable<Order>> GetAllWithDetailsAsync()
         {
             return await _dbSet
-                .Where(o => o.Status == status)
+                .Include(o => o.Supplier)
+                .Include(o => o.ApplicationUser)
+                .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
+        //public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status)
+        //{
+        //    return await _dbSet
+        //        .Where(o => o.Status = status)
+        //        .ToListAsync();
+        //}
     }
 }

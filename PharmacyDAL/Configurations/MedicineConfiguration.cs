@@ -25,12 +25,6 @@ namespace PharmacyDAL.Configurations
             builder.Property(m => m.Description)
                 .HasMaxLength(500);
 
-            builder.Property(m => m.SellingPrice)
-                .HasColumnType("decimal(18,2)");
-
-            builder.Property(m => m.PurchasePrice)
-                .HasColumnType("decimal(18,2)");
-
             builder.Property(m => m.ImagePath)
                 .HasMaxLength(300);
 

@@ -15,7 +15,7 @@ namespace PharmacyDAL.Configurations
         {
             builder.HasKey(oi => oi.Id);
 
-            builder.Property(oi => oi.UnitPrice)
+            builder.Property(oi => oi.PurchasePrice)
                 .HasColumnType("decimal(18,2)");
 
             builder.Property(oi => oi.Discount)
@@ -23,6 +23,15 @@ namespace PharmacyDAL.Configurations
 
             builder.Property(oi => oi.Total)
                 .HasColumnType("decimal(18,2)");
+
+            builder.Property(oi => oi.SellingPrice)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(oi => oi.BatchNumber)
+                .HasMaxLength(50);
+
+            builder.Property(oi => oi.UnitName)
+                .HasMaxLength(50);
 
             builder.HasOne(oi => oi.Order)
                 .WithMany(o => o.OrderItems)
@@ -32,6 +41,11 @@ namespace PharmacyDAL.Configurations
             builder.HasOne(oi => oi.Medicine)
                 .WithMany(m => m.OrderItems)
                 .HasForeignKey(oi => oi.MedicineId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(oi => oi.MedicineBatch)
+                .WithMany()
+                .HasForeignKey(oi => oi.MedicineBatchId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

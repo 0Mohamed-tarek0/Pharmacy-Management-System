@@ -268,16 +268,9 @@ namespace PharmacyDAL.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("ImagePath")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
-
-                    b.Property<DateTime>("ManufactureDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("MinimumStock")
                         .HasColumnType("int");
@@ -287,19 +280,9 @@ namespace PharmacyDAL.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<decimal>("PurchasePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SellingPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("StockQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
+                    b.Property<int>("Type")
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -309,6 +292,56 @@ namespace PharmacyDAL.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Medicines");
+                });
+
+            modelBuilder.Entity("PharmacyDAL.Models.MedicineBatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BatchNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ManufactureDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MedicineId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("PurchasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SellingPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupplierId");
+
+                    b.HasIndex("MedicineId", "BatchNumber")
+                        .IsUnique();
+
+                    b.ToTable("MedicineBatches");
                 });
 
             modelBuilder.Entity("PharmacyDAL.Models.MedicineSupplier", b =>
@@ -337,6 +370,36 @@ namespace PharmacyDAL.Migrations
                     b.ToTable("MedicineSuppliers");
                 });
 
+            modelBuilder.Entity("PharmacyDAL.Models.MedicineUnit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConversionFactor")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsBaseUnit")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MedicineId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnitName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MedicineId", "UnitName")
+                        .IsUnique();
+
+                    b.ToTable("MedicineUnits");
+                });
+
             modelBuilder.Entity("PharmacyDAL.Models.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -357,10 +420,9 @@ namespace PharmacyDAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<int>("Status")
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("int");
 
                     b.Property<int>("SupplierId")
                         .HasColumnType("int");
@@ -388,8 +450,19 @@ namespace PharmacyDAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BatchNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("MedicineBatchId")
+                        .HasColumnType("int");
 
                     b.Property<int>("MedicineId")
                         .HasColumnType("int");
@@ -397,16 +470,26 @@ namespace PharmacyDAL.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("PurchasePrice")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("SellingPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("UnitName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MedicineBatchId");
 
                     b.HasIndex("MedicineId");
 
@@ -486,6 +569,49 @@ namespace PharmacyDAL.Migrations
                     b.HasIndex("SaleId");
 
                     b.ToTable("SaleItems");
+                });
+
+            modelBuilder.Entity("PharmacyDAL.Models.StockTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("MedicineBatchId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MedicineId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReferenceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceType")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MedicineBatchId");
+
+                    b.HasIndex("MedicineId");
+
+                    b.ToTable("StockTransactions");
                 });
 
             modelBuilder.Entity("PharmacyDAL.Models.Supplier", b =>
@@ -583,6 +709,25 @@ namespace PharmacyDAL.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("PharmacyDAL.Models.MedicineBatch", b =>
+                {
+                    b.HasOne("PharmacyDAL.Models.Medicine", "Medicine")
+                        .WithMany("Batches")
+                        .HasForeignKey("MedicineId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PharmacyDAL.Models.Supplier", "Supplier")
+                        .WithMany("Batches")
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Medicine");
+
+                    b.Navigation("Supplier");
+                });
+
             modelBuilder.Entity("PharmacyDAL.Models.MedicineSupplier", b =>
                 {
                     b.HasOne("PharmacyDAL.Models.Medicine", "Medicine")
@@ -600,6 +745,17 @@ namespace PharmacyDAL.Migrations
                     b.Navigation("Medicine");
 
                     b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("PharmacyDAL.Models.MedicineUnit", b =>
+                {
+                    b.HasOne("PharmacyDAL.Models.Medicine", "Medicine")
+                        .WithMany("Units")
+                        .HasForeignKey("MedicineId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Medicine");
                 });
 
             modelBuilder.Entity("PharmacyDAL.Models.Order", b =>
@@ -623,6 +779,11 @@ namespace PharmacyDAL.Migrations
 
             modelBuilder.Entity("PharmacyDAL.Models.OrderItem", b =>
                 {
+                    b.HasOne("PharmacyDAL.Models.MedicineBatch", "MedicineBatch")
+                        .WithMany()
+                        .HasForeignKey("MedicineBatchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("PharmacyDAL.Models.Medicine", "Medicine")
                         .WithMany("OrderItems")
                         .HasForeignKey("MedicineId")
@@ -636,6 +797,8 @@ namespace PharmacyDAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Medicine");
+
+                    b.Navigation("MedicineBatch");
 
                     b.Navigation("Order");
                 });
@@ -670,6 +833,24 @@ namespace PharmacyDAL.Migrations
                     b.Navigation("Sale");
                 });
 
+            modelBuilder.Entity("PharmacyDAL.Models.StockTransaction", b =>
+                {
+                    b.HasOne("PharmacyDAL.Models.MedicineBatch", "MedicineBatch")
+                        .WithMany("StockTransactions")
+                        .HasForeignKey("MedicineBatchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PharmacyDAL.Models.Medicine", "Medicine")
+                        .WithMany("StockTransactions")
+                        .HasForeignKey("MedicineId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Medicine");
+
+                    b.Navigation("MedicineBatch");
+                });
+
             modelBuilder.Entity("PharmacyDAL.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Orders");
@@ -684,11 +865,22 @@ namespace PharmacyDAL.Migrations
 
             modelBuilder.Entity("PharmacyDAL.Models.Medicine", b =>
                 {
+                    b.Navigation("Batches");
+
                     b.Navigation("MedicineSuppliers");
 
                     b.Navigation("OrderItems");
 
                     b.Navigation("SaleItems");
+
+                    b.Navigation("StockTransactions");
+
+                    b.Navigation("Units");
+                });
+
+            modelBuilder.Entity("PharmacyDAL.Models.MedicineBatch", b =>
+                {
+                    b.Navigation("StockTransactions");
                 });
 
             modelBuilder.Entity("PharmacyDAL.Models.Order", b =>
@@ -703,6 +895,8 @@ namespace PharmacyDAL.Migrations
 
             modelBuilder.Entity("PharmacyDAL.Models.Supplier", b =>
                 {
+                    b.Navigation("Batches");
+
                     b.Navigation("MedicineSuppliers");
 
                     b.Navigation("Orders");

@@ -23,7 +23,10 @@ namespace PharmacyDAL.Repositories
         public async Task<Medicine> GetMedicineWithDetailsAsync(int medicineId)
         {
             return await _dbSet
+                
                 .Include(m => m.Category)
+                .Include(m => m.Batches)
+                .Include(m => m.Units)
                 .Include(m => m.MedicineSuppliers)
                     .ThenInclude(ms => ms.Supplier)
                 .SingleOrDefaultAsync(m => m.Id == medicineId);
@@ -32,15 +35,17 @@ namespace PharmacyDAL.Repositories
         public async Task<IEnumerable<Medicine>> GetLowStockMedicinesAsync()
         {
             return await _dbSet
-                .Where(m => m.StockQuantity <= m.MinimumStock)
+                .Include(m => m.Batches)
+                .Where(m => (m.Batches.Sum(b => (int?)b.Quantity) ?? 0) <= m.MinimumStock)
                 .ToListAsync();
         }
 
         public async Task<IEnumerable<Medicine>> GetExpiringSoonAsync(int daysThreshold)
         {
-            var cutoffDate = DateTime.UtcNow.AddDays(daysThreshold);
+            var cutoffDate = DateTime.Today.AddDays(daysThreshold);
             return await _dbSet
-                .Where(m => m.ExpiryDate <= cutoffDate)
+                .Include(m => m.Batches)
+                .Where(m => m.Batches.Any(b => b.ExpiryDate <= cutoffDate && b.Quantity > 0))
                 .ToListAsync();
         }
 
@@ -55,6 +60,15 @@ namespace PharmacyDAL.Repositories
         {
             return await _dbSet
                 .Where(m => m.MedicineSuppliers.Any(ms => ms.SupplierId == supplierId))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Medicine>> GetAllWithCategoryAsync()
+        {
+            return await _dbSet
+                .Include(m => m.Category)
+                .Include(m => m.Batches)
+                .AsNoTracking()
                 .ToListAsync();
         }
     }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PharmacyDAL.Interfaces;
 using PharmacyDAL.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace PharmacyDAL.UnitOfWork
 {
@@ -17,6 +18,8 @@ namespace PharmacyDAL.UnitOfWork
         private ISupplierRepository _suppliers;
         private ISaleRepository _sales;
         private IOrderRepository _orders;
+        private IMedicineBatchRepository _medicineBatches;
+        private IStockTransactionRepository _stockTransactions;
 
         public UnitOfWork(DbContext.ApplicationDbContext context)
         {
@@ -39,9 +42,20 @@ namespace PharmacyDAL.UnitOfWork
         public IOrderRepository Orders =>
             _orders ??= new OrderRepository(_context);
 
+        public IMedicineBatchRepository MedicineBatches =>
+            _medicineBatches ??= new MedicineBatchRepository(_context);
+
+        public IStockTransactionRepository StockTransactions =>
+            _stockTransactions ??= new StockTransactionRepository(_context);
+
         public async Task<int> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
 
         public void Dispose()

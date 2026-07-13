@@ -1,0 +1,43 @@
+﻿@model IEnumerable<PharmacyBL.DTOs.Orders.OrderDto>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Purchase Orders</h3>
+        <div class="card-tools">
+            <a asp-action="Create" class="btn btn-primary">New Order</a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Supplier</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.OrderNumber</td>
+                        <td>@order.SupplierName</td>
+                        <td>@order.OrderDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@order.Status</td>
+                        <td>@order.TotalAmount.ToString("0.00")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
