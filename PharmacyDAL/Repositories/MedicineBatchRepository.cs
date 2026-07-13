@@ -32,5 +32,13 @@ namespace PharmacyDAL.Repositories
                 .Where(b => b.ExpiryDate <= cutoffDate && b.Quantity > 0)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<MedicineBatch>> GetAllWithMedicineOrderedByExpiryAsync()
+        {
+            return await _dbSet
+                .Include(b => b.Medicine)
+                .OrderBy(b => b.ExpiryDate)
+                .ToListAsync();
+        }
     }
 }

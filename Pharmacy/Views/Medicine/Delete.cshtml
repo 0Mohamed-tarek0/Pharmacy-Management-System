@@ -1,0 +1,90 @@
+﻿@model PharmacyBL.DTOs.Medicines.MedicineDetailsDto
+
+@{
+    ViewData["Title"] = $"Delete {Model.Name}";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Delete @Model.Name</h3>
+        <div class="card-tools">
+            <a asp-action="Index" class="btn btn-secondary btn-sm">Back to list</a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <p class="text-muted">
+            Choose a single batch to delete below, or delete the entire medicine along with all of its batches.
+        </p>
+
+        <h5 class="mt-3">Batches</h5>
+        <table class="table table-bordered table-sm align-middle">
+            <thead>
+                <tr>
+                    <th>Batch No</th>
+                    <th>Expiry</th>
+                    <th>Purchase Price</th>
+                    <th>Selling Price</th>
+                    <th>Quantity</th>
+                    <th width="120">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Batches.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-muted">No batches for this medicine.</td></tr>
+                }
+                @foreach (var batch in Model.Batches)
+                {
+                    <tr class="@(batch.IsExpired ? "table-danger" : "")">
+                        <td>@batch.BatchNumber</td>
+                        <td>@batch.ExpiryDate.ToString("yyyy-MM-dd")</td>
+                        <td>@batch.PurchasePrice.ToString("0.00")</td>
+                        <td>@batch.SellingPrice.ToString("0.00")</td>
+                        <td>@batch.Quantity</td>
+                        <td>
+                            <form asp-action="DeleteBatch" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="medicineId" value="@Model.Id" />
+                                <input type="hidden" name="batchId" value="@batch.Id" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                        onclick="return confirm('Delete batch @batch.BatchNumber?')">
+                                    Delete Batch
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="alert alert-warning mt-4">
+            <strong>Delete entire medicine</strong>
+            <p class="mb-2">
+                This removes <strong>@Model.Name</strong> and all @Model.Batches.Count() of its batch(es) permanently.
+                This cannot be undone, and will fail if the medicine has related sales, orders or stock history.
+            </p>
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('Delete @Model.Name and ALL of its batches? This cannot be undone.')">
+                    Delete Entire Medicine + All Batches
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

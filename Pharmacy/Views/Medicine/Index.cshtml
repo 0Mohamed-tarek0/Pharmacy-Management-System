@@ -13,12 +13,17 @@
         <h3 class="card-title">Medicines</h3>
 
         <div class="card-tools">
+            <a asp-action="ExpiryReport" class="btn btn-outline-secondary">Batches by Expiry</a>
             <a asp-action="Create" class="btn btn-primary">Add Medicine</a>
         </div>
     </div>
 
     <div class="card-body">
-        <table class="table table-bordered table-hover">
+        <div class="form-group" style="max-width: 350px;">
+            <input type="text" id="medicineFilter" class="form-control" placeholder="Search by name, category or barcode..." autocomplete="off" />
+        </div>
+
+        <table class="table table-bordered table-hover" id="medicinesTable">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -34,7 +39,8 @@
             <tbody>
                 @foreach (var medicine in Model)
                 {
-                    <tr class="@(medicine.IsLowStock ? "table-danger" : "")">
+                    <tr class="@(medicine.IsLowStock ? "table-danger" : "")"
+                        data-search="@($"{medicine.Name} {medicine.CategoryName} {medicine.Barcode}".ToLowerInvariant())">
                         <td>@medicine.Name</td>
                         <td>@medicine.Type</td>
                         <td>@medicine.CategoryName</td>
@@ -52,17 +58,33 @@
 
                             <a asp-action="Edit" asp-route-id="@medicine.Id" class="btn btn-warning btn-sm">Edit</a>
 
-                            <form asp-action="Delete" asp-route-id="@medicine.Id" method="post" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this medicine?')">
-                                    Delete
-                                </button>
-                            </form>
+                            @* <a asp-action="Delete" asp-route-id="@medicine.Id" class="btn btn-danger btn-sm">Delete</a> *@
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        <p id="medicineFilterEmpty" class="text-muted text-center" style="display:none;">No medicines match your search.</p>
     </div>
 
 </div>
+
+<script>
+    const medicineFilterInput = document.getElementById('medicineFilter');
+    const medicineRows = document.querySelectorAll('#medicinesTable tbody tr[data-search]');
+    const medicineFilterEmpty = document.getElementById('medicineFilterEmpty');
+
+    medicineFilterInput.addEventListener('input', function () {
+        const query = this.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        medicineRows.forEach(row => {
+            const matches = !query || row.dataset.search.includes(query);
+            row.style.display = matches ? '' : 'none';
+            if (matches) visibleCount++;
+        });
+
+        medicineFilterEmpty.style.display = visibleCount === 0 ? '' : 'none';
+    });
+</script>

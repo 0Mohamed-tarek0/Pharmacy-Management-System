@@ -23,6 +23,16 @@ namespace Pharmacy.Controllers
             return View(orders);
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            var order = await _orderService.GetDetailsAsync(id);
+
+            if (order == null)
+                return NotFound();
+
+            return View(order);
+        }
+
         public async Task<IActionResult> Create()
         {
             ViewBag.Suppliers = await _orderService.GetSuppliersAsync();

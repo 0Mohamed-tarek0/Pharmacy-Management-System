@@ -32,15 +32,11 @@
 
         <h5>Add Item</h5>
         <div class="row">
-            <div class="col-md-3 form-group">
+            <div class="col-md-3 form-group" style="position: relative;">
                 <label>Medicine</label>
-                <select id="medicineId" class="form-control">
-                    <option value="">Select Medicine</option>
-                    @foreach (var m in medicines)
-                    {
-                        <option value="@m.Id" data-type="@m.Type" data-barcode="@m.Barcode" data-category="@m.CategoryName">@m.Name</option>
-                    }
-                </select>
+                <input id="medicineSearch" type="text" class="form-control" placeholder="Type medicine name..." autocomplete="off" />
+                <input type="hidden" id="medicineId" />
+                <div id="medicineSuggestions" class="list-group" style="display:none; position:absolute; top:100%; left:0; right:0; z-index:1050; max-height:220px; overflow-y:auto; box-shadow:0 2px 6px rgba(0,0,0,0.15);"></div>
             </div>
             <div class="col-md-2 form-group">
                 <label>Type</label>
@@ -55,7 +51,7 @@
                 <input id="itemBarcode" class="form-control" readonly />
             </div>
             <div class="col-md-3 form-group">
-             <label>Unit</label>
+                <label>Unit</label>
                 <select id="itemUnit" class="form-control">
                     <option value="">Select Unit</option>
                 </select>
@@ -76,8 +72,8 @@
                 <input id="itemSellingPrice" type="number" step="0.01" min="0" class="form-control" />
             </div>
             <div class="col-md-2 form-group">
-                <label>Discount</label>
-                <input id="itemDiscount" type="number" step="0.01" min="0" value="0" class="form-control" />
+                <label>Discount (%)</label>
+                <input id="itemDiscount" type="number" step="0.01" min="0" max="100" value="0" class="form-control" />
             </div>
             <div class="col-md-2 form-group">
                 <label>Batch Number</label>
@@ -96,7 +92,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Quantity</th>
-                    <th>Selling Price</th>
+                    <th>Purchase Price</th>
                     <th>Discount</th>
                     <th>Total</th>
                     <th></th>
@@ -132,52 +128,119 @@
     </div>
 </div>
 
+<script id="medicinesData" type="application/json">
+    @Html.Raw(System.Text.Json.JsonSerializer.Serialize(medicines.Select(m => new
+    {
+            id = m.Id,
+            name = m.Name,
+            type = m.Type.ToString(),
+            barcode = m.Barcode,
+            category = m.CategoryName
+    })))
+</script>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
         const items = [];
 
-        const medicineSelect = document.getElementById('medicineId');
-                medicineSelect.addEventListener('change', async function () {
+        // Medicine list rendered by the server, used for the type-ahead search below.
+        const medicinesData = JSON.parse(document.getElementById('medicinesData').textContent);
 
-            const opt = this.options[this.selectedIndex];
+        const medicineSearchInput = document.getElementById('medicineSearch');
+        const medicineIdInput = document.getElementById('medicineId');
+        const medicineSuggestions = document.getElementById('medicineSuggestions');
 
-            document.getElementById('itemType').value = opt.dataset.type || '';
-            document.getElementById('itemCategory').value = opt.dataset.category || '';
-            document.getElementById('itemBarcode').value = opt.dataset.barcode || '';
+        function clearMedicineSelection() {
+            medicineIdInput.value = '';
+            document.getElementById('itemType').value = '';
+            document.getElementById('itemCategory').value = '';
+            document.getElementById('itemBarcode').value = '';
+            document.getElementById('itemUnit').innerHTML = '<option value="">Select Unit</option>';
+        }
 
-            const medicineId = this.value;
+        function hideSuggestions() {
+            medicineSuggestions.style.display = 'none';
+            medicineSuggestions.innerHTML = '';
+        }
+
+        medicineSearchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLowerCase();
+
+            // Once the user edits the text, the previous selection (if any) is no longer valid
+            // until they pick a suggestion again.
+            clearMedicineSelection();
+
+            if (!query) {
+                hideSuggestions();
+                return;
+            }
+
+            const matches = medicinesData
+                .filter(m => m.name.toLowerCase().includes(query))
+                .slice(0, 8);
+
+            if (matches.length === 0) {
+                medicineSuggestions.innerHTML = '<div class="list-group-item text-muted">No medicines match.</div>';
+                medicineSuggestions.style.display = 'block';
+                return;
+            }
+
+            medicineSuggestions.innerHTML = '';
+
+            matches.forEach(m => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'list-group-item list-group-item-action';
+                btn.textContent = m.name;
+                btn.addEventListener('click', () => selectMedicine(m));
+                medicineSuggestions.appendChild(btn);
+            });
+
+            medicineSuggestions.style.display = 'block';
+        });
+
+        medicineSearchInput.addEventListener('focus', function () {
+            if (this.value.trim() && medicineSuggestions.innerHTML) {
+                medicineSuggestions.style.display = 'block';
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (e.target !== medicineSearchInput && !medicineSuggestions.contains(e.target)) {
+                hideSuggestions();
+            }
+        });
+
+        async function selectMedicine(m) {
+            medicineSearchInput.value = m.name;
+            medicineIdInput.value = m.id;
+            document.getElementById('itemType').value = m.type || '';
+            document.getElementById('itemCategory').value = m.category || '';
+            document.getElementById('itemBarcode').value = m.barcode || '';
+
+            hideSuggestions();
 
             const unitSelect = document.getElementById('itemUnit');
+            unitSelect.innerHTML = '<option value="">Loading...</option>';
 
-            unitSelect.innerHTML =
-                '<option value="">Loading...</option>';
-
-            if (!medicineId)
-                return;
-
-            const response =
-                await fetch(`/Order/GetMedicineUnits?medicineId=${medicineId}`);
-
+            const response = await fetch(`/Order/GetMedicineUnits?medicineId=${m.id}`);
             const units = await response.json();
 
             unitSelect.innerHTML = '';
 
             units.forEach(u => {
-
                 unitSelect.innerHTML +=
                     `<option value="${u.unitName}">
                         ${u.unitName}
                     </option>`;
-
             });
-
-        });
+        }
 
         document.getElementById('addItemBtn').addEventListener('click', function () {
-            const medicineId = medicineSelect.value;
-            const medicineName = medicineSelect.options[medicineSelect.selectedIndex]?.text;
+            const medicineId = medicineIdInput.value;
+            const medicineName = medicineSearchInput.value;
             const quantity = parseInt(document.getElementById('itemQuantity').value || '0', 10);
             const unitName = document.getElementById('itemUnit').value || '';
             const purchasePrice = parseFloat(document.getElementById('itemPurchasePrice').value || '0');
@@ -186,59 +249,63 @@
             const batchNumber = document.getElementById('itemBatchNumber').value;
             const expiryDate = document.getElementById('itemExpiryDate').value;
 
-            if (!medicineId || !quantity || !batchNumber || !expiryDate) {
-                alert('Please fill in Medicine, Quantity, Batch Number and Expiry Date.');
+            if (!medicineId) {
+                alert('Please type a medicine name and pick one from the suggestions list.');
                 return;
             }
 
-            const total = (quantity * purchasePrice) - discount;
-                    const alreadyExists = items.some(x =>
-            x.medicineId == medicineId &&
-            x.batchNumber === batchNumber
-        );
+            if (!quantity || !batchNumber || !expiryDate) {
+                alert('Please fill in Quantity, Batch Number and Expiry Date.');
+                return;
+            }
 
-        if (alreadyExists) {
-            alert("This medicine with the same batch already exists in the order.");
-            return;
-        }
-                const exists = items.some(x =>
-            x.medicineId == medicineId &&
-            x.batchNumber.toLowerCase() === batchNumber.toLowerCase());
+            const exists = items.some(x =>
+                x.medicineId == medicineId &&
+                x.batchNumber.toLowerCase() === batchNumber.toLowerCase());
 
-        if (exists) {
-            alert("This medicine with the same batch already exists in the order.");
-            return;
-        }
+            if (exists) {
+                alert("This medicine with the same batch already exists in the order.");
+                return;
+            }
 
-                if (purchasePrice <= 0) {
-            alert("Purchase Price must be greater than zero.");
-            return;
-        }
+            if (purchasePrice <= 0) {
+                alert("Purchase Price must be greater than zero.");
+                return;
+            }
 
-        if (sellingPrice <= 0) {
-            alert("Selling Price must be greater than zero.");
-            return;
-        }
+            if (sellingPrice <= 0) {
+                alert("Selling Price must be greater than zero.");
+                return;
+            }
 
-        if (sellingPrice < purchasePrice) {
-            alert("Selling Price cannot be less than Purchase Price.");
-            return;
-        }
+            if (sellingPrice < purchasePrice) {
+                alert("Selling Price cannot be less than Purchase Price.");
+                return;
+            }
 
-                if (quantity <= 0) {
-            alert("Quantity must be greater than zero.");
-            return;
-        }
+            if (quantity <= 0) {
+                alert("Quantity must be greater than zero.");
+                return;
+            }
 
-                const today = new Date();
-        today.setHours(0,0,0,0);
+            if (discount < 0 || discount > 100) {
+                alert("Discount must be a percentage between 0 and 100.");
+                return;
+            }
 
-        const expiry = new Date(expiryDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-        if (expiry <= today) {
-            alert("Expiry Date must be in the future.");
-            return;
-        }
+            const expiry = new Date(expiryDate);
+
+            if (expiry <= today) {
+                alert("Expiry Date must be in the future.");
+                return;
+            }
+
+            // Quantity x Purchase Price, then the discount percentage is applied on top of that.
+            const total = (quantity * purchasePrice) * (1 - (discount / 100));
+
             items.push({
                 medicineId, medicineName, quantity, unitName,
                 purchasePrice, sellingPrice, discount, total,
@@ -250,8 +317,9 @@
             updateSummary();
 
             // reset the add-item inputs for the next row
+            medicineSearchInput.value = '';
+            clearMedicineSelection();
             document.getElementById('itemQuantity').value = '';
-            document.getElementById('itemUnit').value = '';
             document.getElementById('itemPurchasePrice').value = '';
             document.getElementById('itemSellingPrice').value = '';
             document.getElementById('itemDiscount').value = '0';
@@ -267,8 +335,8 @@
                 tr.innerHTML = `
                     <td>${it.medicineName}</td>
                     <td>${it.quantity} ${it.unitName}</td>
-                    <td>${it.sellingPrice.toFixed(2)}</td>
-                    <td>${it.discount.toFixed(2)}</td>
+                    <td>${it.purchasePrice.toFixed(2)}</td>
+                    <td>${it.discount.toFixed(2)}%</td>
                     <td>${it.total.toFixed(2)}</td>
                     <td><button type="button" class="btn btn-sm btn-danger" onclick="removeItem(${idx})">Remove</button></td>
                 `;
@@ -282,6 +350,7 @@
             items.splice(idx, 1);
             renderTable();
             renderHiddenInputs();
+            updateSummary();
         }
 
         function renderHiddenInputs() {
@@ -301,7 +370,7 @@
             });
         }
 
-                function updateSummary() {
+        function updateSummary() {
 
             document.getElementById("totalItems").innerText = items.length;
 

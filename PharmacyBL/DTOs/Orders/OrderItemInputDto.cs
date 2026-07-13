@@ -18,7 +18,8 @@ namespace PharmacyBL.DTOs.Orders
         [Range(0, 100000)]
         public decimal PurchasePrice { get; set; }
 
-        [Range(0, 100000)]
+        /// <summary>Discount as a percentage (0-100), applied to Quantity x PurchasePrice.</summary>
+        [Range(0, 100)]
         public decimal Discount { get; set; }
 
         [Range(0, 100000)]

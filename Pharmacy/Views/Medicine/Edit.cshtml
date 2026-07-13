@@ -69,6 +69,32 @@
                         <span asp-validation-for="CategoryId" class="text-danger"></span>
                     </div>
                 </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="BaseUnitName"></label>
+                        <select asp-for="BaseUnitName" class="form-control">
+                            <option value="">Select Unit</option>
+                            <option value="Tablet">Tablet</option>
+                            <option value="Capsule">Capsule</option>
+                            <option value="Strip">Strip</option>
+                            <option value="Ampoule">Ampoule</option>
+                            <option value="Vial">Vial</option>
+                            <option value="Tube">Tube</option>
+                            <option value="Bottle">Bottle</option>
+                            <option value="Box">Box</option>
+                            <option value="Sachet">Sachet</option>
+                            <option value="Jar">Jar</option>
+                            <option value="Piece">Piece</option>
+                            <option value="Pack">Pack</option>
+                            <option value="Roll">Roll</option>
+                            <option value="Syringe">Syringe</option>
+                            <option value="Bag">Bag</option>
+                        </select>
+                        <small class="form-text text-muted">The smallest unit this medicine is sold in.</small>
+                        <span asp-validation-for="BaseUnitName" class="text-danger"></span>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">

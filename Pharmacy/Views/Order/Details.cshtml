@@ -1,0 +1,78 @@
+﻿@model PharmacyBL.DTOs.Orders.OrderDetailsDto
+
+@{
+    ViewData["Title"] = $"Order {Model.OrderNumber}";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Order @Model.OrderNumber</h3>
+        <div class="card-tools">
+            <a asp-action="Index" class="btn btn-secondary btn-sm">Back to list</a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <strong>Supplier</strong>
+                <div>@Model.SupplierName</div>
+            </div>
+            <div class="col-md-3">
+                <strong>Date</strong>
+                <div>@Model.OrderDate.ToString("yyyy-MM-dd HH:mm")</div>
+            </div>
+            <div class="col-md-3">
+                <strong>Status</strong>
+                <div>@Model.Status</div>
+            </div>
+            <div class="col-md-3">
+                <strong>Received By</strong>
+                <div>@(string.IsNullOrWhiteSpace(Model.CreatedByUserName) ? "-" : Model.CreatedByUserName)</div>
+            </div>
+        </div>
+
+        <h5>Items</h5>
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Batch No</th>
+                    <th>Expiry</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>Purchase Price</th>
+                    <th>Selling Price</th>
+                    <th>Discount</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Items.Any())
+                {
+                    <tr><td colspan="9" class="text-center text-muted">No items on this order.</td></tr>
+                }
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.MedicineName</td>
+                        <td>@item.BatchNumber</td>
+                        <td>@item.ExpiryDate.ToString("yyyy-MM-dd")</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitName</td>
+                        <td>@item.PurchasePrice.ToString("0.00")</td>
+                        <td>@item.SellingPrice.ToString("0.00")</td>
+                        <td>@item.Discount.ToString("0.00")%</td>
+                        <td>@item.Total.ToString("0.00")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="8" class="text-right">Grand Total</th>
+                    <th>@Model.TotalAmount.ToString("0.00")</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
