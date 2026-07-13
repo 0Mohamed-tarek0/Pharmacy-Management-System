@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using PharmacyBL.Common;
 using PharmacyBL.DTOs.Categories;
 using PharmacyBL.DTOs.Medicines;
@@ -35,9 +36,13 @@ namespace PharmacyBL.Services
                 ImagePath = m.ImagePath,
                 MinimumStock = m.MinimumStock,
                 TotalQuantity = m.Batches.Sum(b => b.Quantity),
+                // Show the price from the most recently received batch still in
+                // stock; if two batches were received at the same time, prefer
+                // the higher price.
                 SellingPrice = m.Batches
                     .Where(b => b.Quantity > 0)
-                    .OrderBy(b => b.ExpiryDate)
+                    .OrderByDescending(b => b.CreatedDate)
+                    .ThenByDescending(b => b.SellingPrice)
                     .Select(b => (decimal?)b.SellingPrice)
                     .FirstOrDefault()
             });
@@ -45,7 +50,7 @@ namespace PharmacyBL.Services
 
         public async Task<UpdateMedicineDto?> GetByIdAsync(int id)
         {
-            var medicine = await _unitOfWork.Medicines.GetByIdAsync(id);
+            var medicine = await _unitOfWork.Medicines.GetMedicineWithDetailsAsync(id);
 
             if (medicine == null)
                 return null;
@@ -59,7 +64,8 @@ namespace PharmacyBL.Services
                 MinimumStock = medicine.MinimumStock,
                 Barcode = medicine.Barcode,
                 ImagePath = medicine.ImagePath,
-                CategoryId = medicine.CategoryId
+                CategoryId = medicine.CategoryId,
+                BaseUnitName = medicine.Units.FirstOrDefault(u => u.IsBaseUnit)?.UnitName ?? "Unit"
             };
         }
 
@@ -143,7 +149,7 @@ namespace PharmacyBL.Services
 
         public async Task UpdateAsync(UpdateMedicineDto dto)
         {
-            var medicine = await _unitOfWork.Medicines.GetByIdAsync(dto.Id);
+            var medicine = await _unitOfWork.Medicines.GetMedicineWithDetailsAsync(dto.Id);
 
             if (medicine == null)
                 throw new Exception("Medicine not found.");
@@ -166,6 +172,12 @@ namespace PharmacyBL.Services
             medicine.ImagePath = dto.ImagePath;
             medicine.CategoryId = dto.CategoryId;
 
+            var baseUnit = medicine.Units.FirstOrDefault(u => u.IsBaseUnit);
+            if (baseUnit != null && !string.IsNullOrWhiteSpace(dto.BaseUnitName))
+            {
+                baseUnit.UnitName = dto.BaseUnitName;
+            }
+
             _unitOfWork.Medicines.Update(medicine);
 
             await _unitOfWork.SaveChangesAsync();
@@ -173,14 +185,49 @@ namespace PharmacyBL.Services
 
         public async Task DeleteAsync(int id)
         {
-            var medicine = await _unitOfWork.Medicines.GetByIdAsync(id);
+            var medicine = await _unitOfWork.Medicines.GetMedicineWithDetailsAsync(id);
 
             if (medicine == null)
                 throw new Exception("Medicine not found.");
 
-            _unitOfWork.Medicines.Remove(medicine);
+            try
+            {
+                if (medicine.Batches.Any())
+                    _unitOfWork.MedicineBatches.RemoveRange(medicine.Batches);
 
-            await _unitOfWork.SaveChangesAsync();
+                if (medicine.Units.Any())
+                    _unitOfWork.MedicineUnits.RemoveRange(medicine.Units);
+
+                if (medicine.MedicineSuppliers.Any())
+                    _unitOfWork.MedicineSuppliers.RemoveRange(medicine.MedicineSuppliers);
+
+                _unitOfWork.Medicines.Remove(medicine);
+
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                throw new Exception("This medicine can't be deleted because it has related sales, purchase orders or stock transaction history. Try deleting individual batches instead, or remove that history first.");
+            }
+        }
+
+        public async Task DeleteBatchAsync(int medicineId, int batchId)
+        {
+            var batch = await _unitOfWork.MedicineBatches.GetByIdAsync(batchId);
+
+            if (batch == null || batch.MedicineId != medicineId)
+                throw new Exception("Batch not found.");
+
+            try
+            {
+                _unitOfWork.MedicineBatches.Remove(batch);
+
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                throw new Exception("This batch can't be deleted because it has related sales, orders or stock transaction history.");
+            }
         }
 
         public async Task<IEnumerable<CategoryDto>> GetCategoriesAsync()
@@ -192,6 +239,20 @@ namespace PharmacyBL.Services
                 Id = c.Id,
                 Name = c.Name,
                 Description = c.Description
+            });
+        }
+
+        public async Task<IEnumerable<BatchExpiryRowDto>> GetBatchesByExpiryAsync()
+        {
+            var batches = await _unitOfWork.MedicineBatches.GetAllWithMedicineOrderedByExpiryAsync();
+
+            return batches.Select(b => new BatchExpiryRowDto
+            {
+                MedicineId = b.MedicineId,
+                MedicineName = b.Medicine?.Name ?? string.Empty,
+                BatchNumber = b.BatchNumber,
+                ExpiryDate = b.ExpiryDate,
+                Quantity = b.Quantity
             });
         }
     }

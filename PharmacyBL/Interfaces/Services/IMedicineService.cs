@@ -23,6 +23,12 @@ namespace PharmacyBL.Interfaces.Services
 
         Task DeleteAsync(int id);
 
+        /// <summary>Deletes a single batch belonging to the given medicine.</summary>
+        Task DeleteBatchAsync(int medicineId, int batchId);
+
         Task<IEnumerable<CategoryDto>> GetCategoriesAsync();
+
+        /// <summary>All batches, across all medicines, ordered by nearest expiry date first.</summary>
+        Task<IEnumerable<BatchExpiryRowDto>> GetBatchesByExpiryAsync();
     }
 }

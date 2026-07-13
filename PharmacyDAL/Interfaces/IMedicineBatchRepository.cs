@@ -11,5 +11,8 @@ namespace PharmacyDAL.Interfaces
         Task<List<MedicineBatch>> GetBatchesForMedicineFefoAsync(int medicineId);
 
         Task<IEnumerable<MedicineBatch>> GetExpiringSoonAsync(int daysThreshold);
+
+        /// <summary>All batches (any medicine) with Medicine loaded, ordered by nearest expiry first.</summary>
+        Task<IEnumerable<MedicineBatch>> GetAllWithMedicineOrderedByExpiryAsync();
     }
 }

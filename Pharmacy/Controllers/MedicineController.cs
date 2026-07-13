@@ -23,6 +23,13 @@ namespace Pharmacy.Controllers
             return View(medicines);
         }
 
+        public async Task<IActionResult> ExpiryReport()
+        {
+            var batches = await _medicineService.GetBatchesByExpiryAsync();
+
+            return View(batches);
+        }
+
         public async Task<IActionResult> Details(int id)
         {
             var medicine = await _medicineService.GetDetailsAsync(id);
@@ -90,15 +97,54 @@ namespace Pharmacy.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            await _medicineService.DeleteAsync(id);
+            var medicine = await _medicineService.GetDetailsAsync(id);
 
-            TempData["Success"] = "Medicine deleted successfully.";
+            if (medicine == null)
+                return NotFound();
 
-            return RedirectToAction(nameof(Index));
+            return View(medicine);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                await _medicineService.DeleteAsync(id);
+
+                TempData["Success"] = "Medicine deleted successfully.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+
+                return RedirectToAction(nameof(Delete), new { id });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteBatch(int medicineId, int batchId)
+        {
+            try
+            {
+                await _medicineService.DeleteBatchAsync(medicineId, batchId);
+
+                TempData["Success"] = "Batch deleted successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction(nameof(Delete), new { id = medicineId });
         }
 
 

@@ -29,5 +29,9 @@ namespace PharmacyBL.DTOs.Medicines
 
         [Required]
         public int CategoryId { get; set; }
+
+        /// <summary>Name of the smallest sellable unit, e.g. "Strip", "Ampoule", "Tube", "Bottle".</summary>
+        [Required]
+        public string BaseUnitName { get; set; } = "Unit";
     }
 }

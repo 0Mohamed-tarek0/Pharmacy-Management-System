@@ -39,6 +39,37 @@ namespace PharmacyBL.Services
                 });
         }
 
+        public async Task<OrderDetailsDto?> GetDetailsAsync(int id)
+        {
+            var order = await _unitOfWork.Orders.GetOrderWithItemsAsync(id);
+
+            if (order == null)
+                return null;
+
+            return new OrderDetailsDto
+            {
+                Id = order.Id,
+                OrderNumber = order.OrderNumber,
+                SupplierName = order.Supplier?.CompanyName ?? string.Empty,
+                CreatedByUserName = order.ApplicationUser?.FullName ?? string.Empty,
+                OrderDate = order.OrderDate,
+                Status = order.Status,
+                TotalAmount = order.TotalAmount,
+                Items = order.OrderItems.Select(oi => new OrderItemViewDto
+                {
+                    MedicineName = oi.Medicine?.Name ?? string.Empty,
+                    UnitName = oi.UnitName,
+                    Quantity = oi.Quantity,
+                    PurchasePrice = oi.PurchasePrice,
+                    SellingPrice = oi.SellingPrice,
+                    Discount = oi.Discount,
+                    BatchNumber = oi.BatchNumber,
+                    ExpiryDate = oi.ExpiryDate,
+                    Total = oi.Total
+                }).ToList()
+            };
+        }
+
         public async Task<IEnumerable<SupplierDto>> GetSuppliersAsync()
         {
             var suppliers = await _unitOfWork.Suppliers.GetAllAsync();
@@ -71,7 +102,8 @@ namespace PharmacyBL.Services
 
                 SellingPrice = m.Batches
                                 .Where(b => b.Quantity > 0)
-                                .OrderBy(b => b.ExpiryDate)
+                                .OrderByDescending(b => b.CreatedDate)
+                                .ThenByDescending(b => b.SellingPrice)
                                 .Select(b => (decimal?)b.SellingPrice)
                                 .FirstOrDefault(),
 
@@ -88,7 +120,7 @@ namespace PharmacyBL.Services
 
         public async Task<int> CreateAsync(CreateOrderDto dto)
         {
-            using var dbTransaction=
+            using var dbTransaction =
             await _unitOfWork.BeginTransactionAsync();
 
             try
@@ -129,7 +161,7 @@ namespace PharmacyBL.Services
                     if (itemDto.ExpiryDate <= DateTime.Today)
                         throw new Exception($"{medicine.Name} has an expired batch.");
 
-                    
+
 
                     // 1. Resolve the unit the pharmacist entered the quantity in,
                     //    and convert it to the medicine's base (smallest sellable) unit.
@@ -139,7 +171,11 @@ namespace PharmacyBL.Services
                         throw new Exception("Invalid unit conversion.");
                     int baseQuantity = itemDto.Quantity * conversionFactor;
 
-                    var lineTotal = (itemDto.Quantity * itemDto.PurchasePrice) - itemDto.Discount;
+                    // Discount is a percentage (0-100), applied to Quantity x Purchase Price.
+                    if (itemDto.Discount < 0 || itemDto.Discount > 100)
+                        throw new Exception("Discount must be a percentage between 0 and 100.");
+
+                    var lineTotal = (itemDto.Quantity * itemDto.PurchasePrice) * (1 - (itemDto.Discount / 100m));
                     orderTotal += lineTotal;
 
                     var orderItem = new OrderItem
@@ -178,7 +214,7 @@ namespace PharmacyBL.Services
 
                     if (batch == null)
                     {
-                       
+
                         batch = new MedicineBatch
                         {
                             MedicineId = medicine.Id,
@@ -202,7 +238,7 @@ namespace PharmacyBL.Services
                         _unitOfWork.MedicineBatches.Update(batch);
                     }
 
-                    
+
 
 
                     orderItem.MedicineBatch = batch;

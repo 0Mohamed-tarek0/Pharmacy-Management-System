@@ -1,0 +1,48 @@
+﻿@model IEnumerable<PharmacyBL.DTOs.Medicines.BatchExpiryRowDto>
+
+@{
+    ViewData["Title"] = "Batches by Expiry";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Batches by Nearest Expiry</h3>
+        <div class="card-tools">
+            <a asp-action="Index" class="btn btn-secondary btn-sm">Back to Medicines</a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <p class="text-muted">Every batch across all medicines, soonest to expire at the top.</p>
+
+        <table class="table table-bordered table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>Medicine</th>
+                    <th>Batch No</th>
+                    <th>Expiry Date</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-muted">No batches found.</td></tr>
+                }
+                @foreach (var row in Model)
+                {
+                    <tr class="@(row.IsExpired ? "table-danger" : "")">
+                        <td>@row.MedicineName</td>
+                        <td>@row.BatchNumber</td>
+                        <td>@row.ExpiryDate.ToString("yyyy-MM-dd")</td>
+                        <td>@row.Quantity</td>
+                        <td>@(row.IsExpired ? "Expired" : "OK")</td>
+                        <td><a asp-action="Details" asp-route-id="@row.MedicineId" class="btn btn-info btn-sm">Medicine Details</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

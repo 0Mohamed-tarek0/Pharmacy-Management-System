@@ -11,6 +11,9 @@ namespace PharmacyBL.Interfaces.Services
     {
         Task<IEnumerable<OrderDto>> GetAllAsync();
 
+        /// <summary>Order header plus every line item, for the Order Details screen.</summary>
+        Task<OrderDetailsDto?> GetDetailsAsync(int id);
+
         Task<IEnumerable<SupplierDto>> GetSuppliersAsync();
 
         Task<IEnumerable<MedicineDto>> GetMedicinesAsync();
