@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,5 +26,8 @@ namespace PharmacyDAL.Interfaces
 
         /// <summary>All medicines with Category and Batches loaded (for stock totals).</summary>
         Task<IEnumerable<Medicine>> GetAllWithCategoryAsync();
+
+        /// <summary>All medicines with Category, Batches, and Units loaded.</summary>
+        Task<IEnumerable<Medicine>> GetAllWithDetailsAsync();
     }
 }

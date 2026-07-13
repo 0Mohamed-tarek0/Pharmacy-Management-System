@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using PharmacyBL.DTOs.Sales;
+using PharmacyBL.DTOs.Medicines;
 
 namespace PharmacyBL.Interfaces.Services
 {
@@ -12,5 +14,13 @@ namespace PharmacyBL.Interfaces.Services
         /// then the next, and so on until the line is fully covered.
         /// </summary>
         Task<int> CreateAsync(CreateSaleDto dto);
+
+        Task<IEnumerable<SaleDto>> GetAllAsync();
+
+        Task<SaleDetailsDto?> GetDetailsAsync(int id);
+
+        Task<IEnumerable<MedicineDto>> GetMedicinesAsync();
+
+        Task<IEnumerable<MedicineUnitDto>> GetMedicineUnitsAsync(int medicineId);
     }
 }

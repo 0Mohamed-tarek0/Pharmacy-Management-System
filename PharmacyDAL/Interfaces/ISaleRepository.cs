@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +16,7 @@ namespace PharmacyDAL.Interfaces
         Task<IEnumerable<Sale>> GetSalesByUserAsync(string applicationUserId);
 
         Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime from, DateTime to);
+
+        Task<IEnumerable<Sale>> GetAllWithDetailsAsync();
     }
 }

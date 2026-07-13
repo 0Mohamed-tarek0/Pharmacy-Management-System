@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,6 +42,14 @@ namespace PharmacyDAL.Repositories
         {
             return await _dbSet
                 .Where(s => s.InvoiceDate >= from && s.InvoiceDate <= to)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Sale>> GetAllWithDetailsAsync()
+        {
+            return await _dbSet
+                .Include(s => s.ApplicationUser)
+                .OrderByDescending(s => s.InvoiceDate)
                 .ToListAsync();
         }
     }
