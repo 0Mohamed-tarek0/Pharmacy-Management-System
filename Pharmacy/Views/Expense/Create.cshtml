@@ -1,0 +1,90 @@
+@model Pharmacy.ViewModels.Expenses.CreateExpenseViewModel
+
+@{
+    ViewData["Title"] = "Record Expense";
+}
+
+<div class="page-header">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-receipt"></i>
+        </div>
+        <div>
+            <h1>Record Expense</h1>
+            <p class="page-subtitle">Add a new operating expense to the pharmacy records.</p>
+        </div>
+    </div>
+
+    <a asp-action="Index" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-1"></i> Back to Expenses
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-circle-info text-primary-teal"></i>
+                    Expense Details
+                </h3>
+            </div>
+
+            <form asp-action="Create" method="post" novalidate>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Title"></label>
+                        <input asp-for="Title" class="form-control" placeholder="e.g. July rent payment" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Amount"></label>
+                            <input asp-for="Amount" class="form-control" step="0.01" min="0.01" />
+                            <span asp-validation-for="Amount" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ExpenseDate"></label>
+                            <input asp-for="ExpenseDate" class="form-control" type="date" />
+                            <span asp-validation-for="ExpenseDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ExpenseCategoryId"></label>
+                        <select asp-for="ExpenseCategoryId"
+                                asp-items="ViewBag.ExpenseCategories"
+                                class="form-control">
+                            <option value="">-- Select Category --</option>
+                        </select>
+                        <span asp-validation-for="ExpenseCategoryId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes"></label>
+                        <textarea asp-for="Notes" rows="4" class="form-control" placeholder="Optional notes about this expense"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="card-footer d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-1"></i> Save Expense
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-primary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
