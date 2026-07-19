@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using PharmacyBL.DTOs.Sales;
+using PharmacyBL.Common;
 using PharmacyBL.DTOs.Medicines;
+using PharmacyBL.DTOs.Sales;
 
 namespace PharmacyBL.Interfaces.Services
 {
@@ -22,5 +23,12 @@ namespace PharmacyBL.Interfaces.Services
         Task<IEnumerable<MedicineDto>> GetMedicinesAsync();
 
         Task<IEnumerable<MedicineUnitDto>> GetMedicineUnitsAsync(int medicineId);
+
+        /// <summary>
+        /// Returns some (or all) of a Sale line back from the customer: restocks the
+        /// exact batch(es) it was originally sold from (traced via the Sale's
+        /// StockTransaction history) and logs SaleReturn StockTransaction(s).
+        /// </summary>
+        Task<ServiceResult> ReturnItemAsync(ReturnSaleItemDto dto);
     }
 }

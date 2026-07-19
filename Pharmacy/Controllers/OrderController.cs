@@ -88,5 +88,19 @@ namespace Pharmacy.Controllers
 
             return Json(units);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReturnItem(ReturnOrderItemDto dto)
+        {
+            var result = await _orderService.ReturnItemAsync(dto);
+
+            if (result.Success)
+                TempData["Success"] = result.Message;
+            else
+                TempData["Error"] = result.Message;
+
+            return RedirectToAction(nameof(Details), new { id = dto.OrderId });
+        }
     }
 }

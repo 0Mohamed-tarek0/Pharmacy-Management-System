@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using PharmacyBL.Common;
 using PharmacyBL.DTOs.Categories;
 using PharmacyBL.DTOs.Medicines;
 using PharmacyBL.DTOs.Orders;
@@ -27,5 +28,11 @@ namespace PharmacyBL.Interfaces.Services
         Task<int> CreateAsync(CreateOrderDto dto);
 
         Task<IEnumerable<MedicineUnitDto>> GetMedicineUnitsAsync(int medicineId);
+
+        /// <summary>
+        /// Returns some (or all) of an Order line back to the supplier: removes the
+        /// quantity from the linked MedicineBatch and logs a PurchaseReturn StockTransaction.
+        /// </summary>
+        Task<ServiceResult> ReturnItemAsync(ReturnOrderItemDto dto);
     }
 }

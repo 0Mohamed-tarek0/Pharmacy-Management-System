@@ -25,9 +25,25 @@
     </div>
 </div>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success d-print-none">
+        <i class="fas fa-circle-check"></i>
+        <span>@TempData["Success"]</span>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger d-print-none">
+        <i class="fas fa-circle-exclamation"></i>
+        <span>@TempData["Error"]</span>
+    </div>
+}
+
 <div class="card card-outline card-teal invoice-container">
     <div class="card-body">
-        
+
         <!-- Receipt Header -->
         <div class="row mb-4">
             <div class="col-sm-6">
@@ -69,10 +85,12 @@
                     <tr>
                         <th style="width: 5%">#</th>
                         <th>Medicine Description</th>
-                        <th class="text-center" style="width: 15%">Quantity</th>
-                        <th class="text-right" style="width: 15%">Unit Price</th>
-                        <th class="text-right" style="width: 15%">Discount</th>
-                        <th class="text-right" style="width: 15%">Total</th>
+                        <th class="text-center" style="width: 12%">Quantity</th>
+                        <th class="text-right" style="width: 13%">Unit Price</th>
+                        <th class="text-right" style="width: 13%">Discount</th>
+                        <th class="text-right" style="width: 13%">Total</th>
+                        <th class="text-center d-print-none" style="width: 10%">Returned</th>
+                        <th class="text-center d-print-none" style="width: 14%"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -93,12 +111,70 @@
                             <td class="text-right">@item.UnitPrice.ToString("N2") EGP</td>
                             <td class="text-right text-danger">- @item.Discount.ToString("N2") EGP</td>
                             <td class="text-right font-weight-bold">@item.Total.ToString("N2") EGP</td>
+                            <td class="text-center d-print-none">@item.ReturnedQuantity</td>
+                            <td class="text-center d-print-none">
+                                @if (item.ReturnableQuantity > 0)
+                                {
+                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                            data-bs-toggle="modal" data-bs-target="#returnModal-@item.Id">
+                                        <i class="fas fa-rotate-left me-1"></i> Return
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">Fully returned</span>
+                                }
+                            </td>
                         </tr>
                         index++;
                     }
                 </tbody>
             </table>
         </div>
+
+        @* Modals are rendered outside the table on purpose: nesting a Bootstrap modal
+           inside a table (especially inside a .table-responsive wrapper, which sets
+           overflow-x: auto) can clip it or stop it from displaying at all. *@
+        @foreach (var item in Model.Items)
+        {
+            if (item.ReturnableQuantity > 0)
+            {
+                <div class="modal fade" id="returnModal-@item.Id" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form asp-controller="Sale" asp-action="ReturnItem" method="post">
+                                <input type="hidden" name="SaleId" value="@Model.Id" />
+                                <input type="hidden" name="SaleItemId" value="@item.Id" />
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Return @item.MedicineName from customer</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-muted">
+                                        Sold @item.Quantity, already returned @item.ReturnedQuantity.
+                                    </p>
+                                    <div class="form-group mb-3">
+                                        <label>Quantity to return</label>
+                                        <input type="number" name="Quantity" class="form-control"
+                                               min="1" max="@item.ReturnableQuantity" value="1" required />
+                                        <small class="text-muted">Up to @item.ReturnableQuantity unit(s) can still be returned.</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Reason (optional)</label>
+                                        <textarea name="Reason" class="form-control" rows="2" placeholder="e.g. Customer changed mind, wrong item..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-danger">Confirm Return</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
 
         <!-- Totals Column -->
         <div class="row justify-content-end">
@@ -135,28 +211,52 @@
     .bg-teal-light {
         background-color: var(--primary-light);
     }
+
     @@media print {
         body {
             background-color: white !important;
             color: black !important;
         }
+
         .main-sidebar, .main-header, .main-footer, .d-print-none {
             display: none !important;
         }
+
         .content-wrapper {
             margin-left: 0 !important;
             padding: 0 !important;
             background: white !important;
         }
+
         .card {
             border: none !important;
             box-shadow: none !important;
         }
+
         .card-body {
             padding: 0 !important;
         }
+
         .invoice-container {
             border: none !important;
         }
     }
 </style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var modalElements = document.querySelectorAll('.modal');
+            modalElements.forEach(function(modalEl) {
+                try {
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (!modal) {
+                        new bootstrap.Modal(modalEl);
+                    }
+                } catch (e) {
+                    console.warn('Modal initialization error:', e);
+                }
+            });
+        });
+    </script>
+}

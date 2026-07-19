@@ -26,5 +26,12 @@ namespace PharmacyDAL.Models
         public decimal Discount { get; set; }
 
         public decimal Total { get; set; }
+
+        /// <summary>
+        /// How much of <see cref="Quantity"/> (base units) has already been returned
+        /// by the customer. Restocked amounts are traced back to the exact batch(es)
+        /// this line was originally sold from via the Sale's StockTransaction history.
+        /// </summary>
+        public int ReturnedQuantity { get; set; } = 0;
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PharmacyBL.Common;
 using PharmacyBL.DTOs.Sales;
 using PharmacyBL.DTOs.Medicines;
 using PharmacyBL.Interfaces.Services;
@@ -164,11 +165,13 @@ namespace PharmacyBL.Services
                 Status = sale.Status,
                 Items = sale.SaleItems.Select(si => new SaleItemViewDto
                 {
+                    Id = si.Id,
                     MedicineName = si.Medicine?.Name ?? "Unknown",
                     Quantity = si.Quantity,
                     UnitPrice = si.UnitPrice,
                     Discount = si.Discount,
-                    Total = si.Total
+                    Total = si.Total,
+                    ReturnedQuantity = si.ReturnedQuantity
                 }).ToList()
             };
         }
@@ -223,6 +226,115 @@ namespace PharmacyBL.Services
                 string.Equals(u.UnitName, unitName, StringComparison.OrdinalIgnoreCase));
 
             return unit?.ConversionFactor ?? 1;
+        }
+
+        /// <summary>
+        /// Returns some (or all) of a Sale line back from the customer. Since a sale can
+        /// be fulfilled FEFO from several batches, the batch(es) to restock are traced back
+        /// from this Sale's own "Sale" StockTransactions (in the order they were consumed),
+        /// skipping whatever has already been returned against each one.
+        /// </summary>
+        public async Task<ServiceResult> ReturnItemAsync(ReturnSaleItemDto dto)
+        {
+            using var dbTransaction = await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                if (dto.Quantity <= 0)
+                    throw new Exception("Return quantity must be greater than zero.");
+
+                var saleItem = await _unitOfWork.SaleItems.SingleOrDefaultAsync(si => si.Id == dto.SaleItemId);
+                if (saleItem == null)
+                    throw new Exception("Sale item not found.");
+
+                int remainingReturnable = saleItem.Quantity - saleItem.ReturnedQuantity;
+                if (dto.Quantity > remainingReturnable)
+                    throw new Exception(
+                        $"Cannot return {dto.Quantity} unit(s); only {remainingReturnable} left to return on this line.");
+
+                // The batch(es) this line was originally sold from, in the order they were consumed.
+                var saleTransactions = (await _unitOfWork.StockTransactions.FindAsync(t =>
+                        t.ReferenceType == "Sale" &&
+                        t.ReferenceId == saleItem.SaleId &&
+                        t.MedicineId == saleItem.MedicineId &&
+                        t.Type == StockTransactionType.Sale))
+                    .OrderBy(t => t.Id)
+                    .ToList();
+
+                if (!saleTransactions.Any())
+                    throw new Exception("No original stock movement was found for this sale line; cannot determine which batch to restock.");
+
+                // How much has already been returned per batch, from previous partial returns.
+                var alreadyReturnedByBatch = (await _unitOfWork.StockTransactions.FindAsync(t =>
+                        t.ReferenceType == "Sale" &&
+                        t.ReferenceId == saleItem.SaleId &&
+                        t.MedicineId == saleItem.MedicineId &&
+                        t.Type == StockTransactionType.SaleReturn))
+                    .GroupBy(t => t.MedicineBatchId)
+                    .ToDictionary(g => g.Key, g => g.Sum(t => t.Quantity));
+
+                int remainingToReturn = dto.Quantity;
+
+                foreach (var tx in saleTransactions)
+                {
+                    if (remainingToReturn <= 0)
+                        break;
+
+                    if (tx.MedicineBatchId == null)
+                        continue;
+
+                    int soldFromBatch = -tx.Quantity;
+                    alreadyReturnedByBatch.TryGetValue(tx.MedicineBatchId, out int alreadyReturned);
+
+                    int availableToReturnFromBatch = soldFromBatch - alreadyReturned;
+                    if (availableToReturnFromBatch <= 0)
+                        continue;
+
+                    int takeBack = Math.Min(availableToReturnFromBatch, remainingToReturn);
+
+                    var batch = await _unitOfWork.MedicineBatches.GetByIdAsync(tx.MedicineBatchId.Value);
+                    if (batch == null)
+                        continue;
+
+                    batch.Quantity += takeBack;
+                    _unitOfWork.MedicineBatches.Update(batch);
+
+                    var returnTransaction = new StockTransaction
+                    {
+                        MedicineId = saleItem.MedicineId,
+                        MedicineBatchId = batch.Id,
+                        Type = StockTransactionType.SaleReturn,
+                        Quantity = takeBack,
+                        ReferenceType = "Sale",
+                        ReferenceId = saleItem.SaleId,
+                        Notes = string.IsNullOrWhiteSpace(dto.Reason)
+                            ? $"Customer return from sale item #{saleItem.Id}"
+                            : dto.Reason
+                    };
+
+                    await _unitOfWork.StockTransactions.AddAsync(returnTransaction);
+
+                    // Keep the running total up to date in case this loop touches the same batch twice.
+                    alreadyReturnedByBatch[tx.MedicineBatchId] = alreadyReturned + takeBack;
+
+                    remainingToReturn -= takeBack;
+                }
+
+                if (remainingToReturn > 0)
+                    throw new Exception("Could not match the full return quantity to the original sale batches. Please check the sale's stock history.");
+
+                saleItem.ReturnedQuantity += dto.Quantity;
+                _unitOfWork.SaleItems.Update(saleItem);
+
+                await _unitOfWork.SaveChangesAsync();
+                await dbTransaction.CommitAsync();
+
+                return new ServiceResult { Success = true, Message = "Customer return recorded and stock updated." };
+            }
+            catch (Exception ex)
+            {
+                await dbTransaction.RollbackAsync();
+                return new ServiceResult { Success = false, Message = ex.Message };
+            }
         }
     }
 }
