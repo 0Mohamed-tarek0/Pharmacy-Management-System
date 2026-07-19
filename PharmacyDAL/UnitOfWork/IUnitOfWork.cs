@@ -21,6 +21,8 @@ namespace PharmacyDAL.UnitOfWork
         IGenericRepository<PharmacyDAL.Models.MedicineSupplier> MedicineSuppliers { get; }
         IGenericRepository<PharmacyDAL.Models.OrderItem> OrderItems { get; }
         IGenericRepository<PharmacyDAL.Models.SaleItem> SaleItems { get; }
+        IExpenseCategoryRepository ExpenseCategories { get; }
+        IExpenseRepository Expenses { get; }
         Task<int> SaveChangesAsync();
 
         Task<IDbContextTransaction> BeginTransactionAsync();

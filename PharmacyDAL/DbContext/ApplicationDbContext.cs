@@ -28,6 +28,8 @@ namespace PharmacyDAL.DbContext
         public DbSet<MedicineBatch> MedicineBatches { get; set; }
         public DbSet<MedicineUnit> MedicineUnits { get; set; }
         public DbSet<StockTransaction> StockTransactions { get; set; }
+        public DbSet<ExpenseCategory> ExpenseCategories { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -1,0 +1,62 @@
+@model Pharmacy.ViewModels.ExpenseCategories.UpdateExpenseCategoryViewModel
+
+@{
+    ViewData["Title"] = "Edit Expense Category";
+}
+
+<div class="page-header">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-pen"></i>
+        </div>
+        <div>
+            <h1>Edit Expense Category</h1>
+            <p class="page-subtitle">Update the details of this expense category.</p>
+        </div>
+    </div>
+
+    <a asp-action="Index" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-1"></i> Back to Categories
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-circle-info text-primary-teal"></i>
+                    Category Details
+                </h3>
+            </div>
+
+            <form asp-action="Edit" method="post" novalidate>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+                    <input asp-for="Id" type="hidden" />
+
+                    <div class="mb-3">
+                        <label asp-for="Name"></label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g. Rent, Electricity, Salaries" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="card-footer d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-1"></i> Update Category
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-primary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
