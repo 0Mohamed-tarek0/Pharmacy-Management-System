@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PharmacyBL.Common;
 using PharmacyBL.DTOs.Categories;
 using PharmacyBL.DTOs.Medicines;
 using PharmacyBL.DTOs.Orders;
@@ -57,6 +58,7 @@ namespace PharmacyBL.Services
                 TotalAmount = order.TotalAmount,
                 Items = order.OrderItems.Select(oi => new OrderItemViewDto
                 {
+                    Id = oi.Id,
                     MedicineName = oi.Medicine?.Name ?? string.Empty,
                     UnitName = oi.UnitName,
                     Quantity = oi.Quantity,
@@ -65,7 +67,8 @@ namespace PharmacyBL.Services
                     Discount = oi.Discount,
                     BatchNumber = oi.BatchNumber,
                     ExpiryDate = oi.ExpiryDate,
-                    Total = oi.Total
+                    Total = oi.Total,
+                    ReturnedQuantity = oi.ReturnedQuantity
                 }).ToList()
             };
         }
@@ -285,6 +288,78 @@ namespace PharmacyBL.Services
             {
                 await dbTransaction.RollbackAsync();
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Returns some (or all) of a purchase Order line back to the supplier.
+        /// Removes the returned quantity from the linked MedicineBatch (converted to the
+        /// medicine's base unit) and logs a PurchaseReturn StockTransaction for the audit trail.
+        /// </summary>
+        public async Task<ServiceResult> ReturnItemAsync(ReturnOrderItemDto dto)
+        {
+            using var dbTransaction = await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                if (dto.Quantity <= 0)
+                    throw new Exception("Return quantity must be greater than zero.");
+
+                var orderItem = await _unitOfWork.OrderItems.SingleOrDefaultAsync(oi => oi.Id == dto.OrderItemId);
+                if (orderItem == null)
+                    throw new Exception("Order item not found.");
+
+                int remainingReturnable = orderItem.Quantity - orderItem.ReturnedQuantity;
+                if (dto.Quantity > remainingReturnable)
+                    throw new Exception(
+                        $"Cannot return {dto.Quantity} {orderItem.UnitName}(s); only {remainingReturnable} left to return on this line.");
+
+                if (orderItem.MedicineBatchId == null)
+                    throw new Exception("This order line has no linked batch to return stock from.");
+
+                var batch = await _unitOfWork.MedicineBatches.GetByIdAsync(orderItem.MedicineBatchId.Value);
+                if (batch == null)
+                    throw new Exception("The linked batch no longer exists.");
+
+                var medicine = await _unitOfWork.Medicines.GetMedicineWithDetailsAsync(orderItem.MedicineId);
+                if (medicine == null)
+                    throw new Exception("Medicine not found.");
+
+                int conversionFactor = ResolveConversionFactor(medicine, orderItem.UnitName);
+                int baseReturnQuantity = dto.Quantity * conversionFactor;
+
+                if (batch.Quantity < baseReturnQuantity)
+                    throw new Exception(
+                        $"Cannot return {dto.Quantity} {orderItem.UnitName}(s) of {medicine.Name}: only {batch.Quantity} unit(s) remain in batch {batch.BatchNumber} (some may already be sold).");
+
+                batch.Quantity -= baseReturnQuantity;
+                _unitOfWork.MedicineBatches.Update(batch);
+
+                orderItem.ReturnedQuantity += dto.Quantity;
+                _unitOfWork.OrderItems.Update(orderItem);
+
+                var transaction = new StockTransaction
+                {
+                    MedicineId = orderItem.MedicineId,
+                    MedicineBatchId = batch.Id,
+                    Type = StockTransactionType.PurchaseReturn,
+                    Quantity = -baseReturnQuantity,
+                    ReferenceType = "Order",
+                    ReferenceId = orderItem.OrderId,
+                    Notes = string.IsNullOrWhiteSpace(dto.Reason)
+                        ? $"Returned to supplier from order item #{orderItem.Id}"
+                        : dto.Reason
+                };
+
+                await _unitOfWork.StockTransactions.AddAsync(transaction);
+                await _unitOfWork.SaveChangesAsync();
+                await dbTransaction.CommitAsync();
+
+                return new ServiceResult { Success = true, Message = "Return to supplier recorded and stock updated." };
+            }
+            catch (Exception ex)
+            {
+                await dbTransaction.RollbackAsync();
+                return new ServiceResult { Success = false, Message = ex.Message };
             }
         }
 

@@ -75,5 +75,19 @@ namespace Pharmacy.Controllers
             var units = await _saleService.GetMedicineUnitsAsync(medicineId);
             return Json(units);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReturnItem(ReturnSaleItemDto dto)
+        {
+            var result = await _saleService.ReturnItemAsync(dto);
+
+            if (result.Success)
+                TempData["Success"] = result.Message;
+            else
+                TempData["Error"] = result.Message;
+
+            return RedirectToAction(nameof(Details), new { id = dto.SaleId });
+        }
     }
 }

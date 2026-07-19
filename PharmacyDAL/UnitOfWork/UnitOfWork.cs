@@ -22,6 +22,8 @@ namespace PharmacyDAL.UnitOfWork
         private IStockTransactionRepository _stockTransactions;
         private IGenericRepository<PharmacyDAL.Models.MedicineUnit> _medicineUnits;
         private IGenericRepository<PharmacyDAL.Models.MedicineSupplier> _medicineSuppliers;
+        private IGenericRepository<PharmacyDAL.Models.OrderItem> _orderItems;
+        private IGenericRepository<PharmacyDAL.Models.SaleItem> _saleItems;
 
         public UnitOfWork(DbContext.ApplicationDbContext context)
         {
@@ -55,6 +57,12 @@ namespace PharmacyDAL.UnitOfWork
 
         public IGenericRepository<PharmacyDAL.Models.MedicineSupplier> MedicineSuppliers =>
             _medicineSuppliers ??= new GenericRepository<PharmacyDAL.Models.MedicineSupplier>(_context);
+
+        public IGenericRepository<PharmacyDAL.Models.OrderItem> OrderItems =>
+            _orderItems ??= new GenericRepository<PharmacyDAL.Models.OrderItem>(_context);
+
+        public IGenericRepository<PharmacyDAL.Models.SaleItem> SaleItems =>
+            _saleItems ??= new GenericRepository<PharmacyDAL.Models.SaleItem>(_context);
 
         public async Task<int> SaveChangesAsync()
         {

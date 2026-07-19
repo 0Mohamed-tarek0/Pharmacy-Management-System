@@ -46,5 +46,12 @@ namespace PharmacyDAL.Models
         // Foreign Key -> MedicineBatch (set once the order has been received / stock created)
         public int? MedicineBatchId { get; set; }
         public MedicineBatch? MedicineBatch { get; set; }
+
+        /// <summary>
+        /// How much of <see cref="Quantity"/> (in <see cref="UnitName"/> units) has already
+        /// been returned to the supplier. Stock for a return is taken back out of
+        /// <see cref="MedicineBatch"/> and can never exceed <see cref="Quantity"/>.
+        /// </summary>
+        public int ReturnedQuantity { get; set; } = 0;
     }
 }

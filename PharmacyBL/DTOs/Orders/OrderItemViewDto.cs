@@ -8,6 +8,8 @@ namespace PharmacyBL.DTOs.Orders
 {
     public class OrderItemViewDto
     {
+        public int Id { get; set; }
+
         public string MedicineName { get; set; }
 
         public string UnitName { get; set; }
@@ -25,5 +27,11 @@ namespace PharmacyBL.DTOs.Orders
         public DateTime ExpiryDate { get; set; }
 
         public decimal Total { get; set; }
+
+        /// <summary>How much of this line has already been returned to the supplier.</summary>
+        public int ReturnedQuantity { get; set; }
+
+        /// <summary>How much of this line can still be returned to the supplier.</summary>
+        public int ReturnableQuantity => Quantity - ReturnedQuantity;
     }
 }
