@@ -31,18 +31,43 @@ namespace PharmacyBL.DTOs.Financial
         /// <summary>Total expenses recorded on this day.</summary>
         public decimal Expenses { get; set; }
 
+        /// <summary>
+        /// Cost basis (at purchase price) of every unit actually sold on this day,
+        /// net of the cost basis restored by any customer returns on this day.
+        /// This is the correct figure to compare against revenue for a profit
+        /// calculation - unlike "Purchases", which reflects restocking cash flow
+        /// and has no fixed relationship to what was sold on any given day.
+        /// </summary>
+        public decimal CostOfGoodsSold { get; set; }
+
         // ── Calculated figures ────────────────────────────────────────────────
 
-        /// <summary>Sales − SalesReturns</summary>
+        /// <summary>Sales − SalesReturns. The real revenue earned on this day.</summary>
         public decimal NetSales => Sales - SalesReturns;
 
-        /// <summary>Purchases − PurchaseReturns</summary>
+        /// <summary>Purchases − PurchaseReturns. Cash spent restocking, not a cost of the day's sales.</summary>
         public decimal NetPurchases => Purchases - PurchaseReturns;
 
-        /// <summary>NetSales − NetPurchases</summary>
-        public decimal GrossProfit => NetSales - NetPurchases;
+        /// <summary>
+        /// NetSales − CostOfGoodsSold. The true margin earned on what was actually
+        /// sold today, matching revenue against the cost of those exact units.
+        /// </summary>
+        public decimal GrossProfit => NetSales - CostOfGoodsSold;
 
-        /// <summary>GrossProfit − Expenses</summary>
+        /// <summary>GrossProfit as a percentage of NetSales (0 when there were no net sales).</summary>
+        public decimal GrossProfitMarginPercent => NetSales != 0 ? (GrossProfit / NetSales) * 100m : 0m;
+
+        /// <summary>GrossProfit − Expenses. The day's bottom-line profit.</summary>
         public decimal NetProfit => GrossProfit - Expenses;
+
+        /// <summary>NetProfit as a percentage of NetSales (0 when there were no net sales).</summary>
+        public decimal NetProfitMarginPercent => NetSales != 0 ? (NetProfit / NetSales) * 100m : 0m;
+
+        /// <summary>
+        /// NetSales − NetPurchases − Expenses. Actual cash movement for the day
+        /// (assumes cash sales/purchases) - a liquidity view, distinct from profit,
+        /// since restocking spend and cost of goods sold rarely match on any given day.
+        /// </summary>
+        public decimal NetCashFlow => NetSales - NetPurchases - Expenses;
     }
 }
