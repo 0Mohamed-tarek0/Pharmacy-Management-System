@@ -217,6 +217,11 @@ namespace PharmacyBL.Services
             });
         }
 
+        public Task<decimal> GetTotalByUserAndDateRangeAsync(string applicationUserId, DateTime from, DateTime to)
+        {
+            return _unitOfWork.Sales.GetTotalByUserAndDateRangeAsync(applicationUserId, from, to);
+        }
+
         private static int ResolveConversionFactor(Medicine medicine, string unitName)
         {
             if (string.IsNullOrWhiteSpace(unitName))

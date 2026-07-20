@@ -24,6 +24,8 @@ namespace PharmacyBL.Interfaces.Services
 
         Task<IEnumerable<MedicineUnitDto>> GetMedicineUnitsAsync(int medicineId);
 
+        Task<decimal> GetTotalByUserAndDateRangeAsync(string applicationUserId, DateTime from, DateTime to);
+
         /// <summary>
         /// Returns some (or all) of a Sale line back from the customer: restocks the
         /// exact batch(es) it was originally sold from (traced via the Sale's
