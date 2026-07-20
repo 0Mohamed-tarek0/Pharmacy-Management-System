@@ -1,137 +1,16 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
-}
+@model Pharmacy.ViewModels.Dashboard.DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
 
-<div class="page-header">
-    <div class="page-title">
-        <div class="page-icon">
-            <i class="fas fa-chart-pie"></i>
-        </div>
-        <div>
-            <h1>Welcome back, @User.Identity?.Name 👋</h1>
-            <p class="page-subtitle">Here's what's happening in your pharmacy today.</p>
-        </div>
-    </div>
-</div>
-
+<div class="dashboard-hero mb-4"><div><span class="dashboard-kicker">@(Model.IsAdmin ? "ADMIN OVERVIEW" : "PHARMACIST WORKSPACE")</span><h1>Good day, @User.Identity?.Name</h1><p>@(Model.IsAdmin ? "Keep an eye on today's cash flow and inventory." : "Everything you need for a smooth shift is here.")</p></div><div class="dashboard-hero-icon"><i class="fas @(Model.IsAdmin ? "fa-chart-line" : "fa-prescription-bottle-alt")"></i></div></div>
 <div class="row">
-
-    <!-- Medicines -->
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card card-hover h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="text-muted mb-1">Medicines</h6>
-                        <h2 class="font-weight-bold mb-1">0</h2>
-                        <span class="stat-trend text-muted">No data yet</span>
-                    </div>
-                    <div class="dashboard-icon" style="background:var(--primary-color);">
-                        <i class="fas fa-capsules"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categories -->
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card card-hover h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="text-muted mb-1">Categories</h6>
-                        <h2 class="font-weight-bold mb-1">0</h2>
-                        <span class="stat-trend text-muted">No data yet</span>
-                    </div>
-                    <div class="dashboard-icon" style="background:var(--success-color);">
-                        <i class="fas fa-tags"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Suppliers -->
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card card-hover h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="text-muted mb-1">Suppliers</h6>
-                        <h2 class="font-weight-bold mb-1">0</h2>
-                        <span class="stat-trend text-muted">No data yet</span>
-                    </div>
-                    <div class="dashboard-icon" style="background:var(--warning-color);">
-                        <i class="fas fa-truck"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sales -->
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card card-hover h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="text-muted mb-1">Today's Sales</h6>
-                        <h2 class="font-weight-bold mb-1">0 EGP</h2>
-                        <span class="stat-trend text-muted">No data yet</span>
-                    </div>
-                    <div class="dashboard-icon" style="background:var(--danger-color);">
-                        <i class="fas fa-cash-register"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="row">
-
-    <div class="col-lg-7 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fas fa-clock-rotate-left text-primary-teal"></i>
-                    Recent Activity
-                </h3>
-            </div>
-            <div class="card-body">
-                <div class="empty-state py-4">
-                    <div class="empty-icon">
-                        <i class="fas fa-inbox"></i>
-                    </div>
-                    <h5>Nothing to show yet</h5>
-                    <p>Activity like new sales, stock updates and orders will appear here.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-5 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h3 class="card-title">
-                    <i class="fas fa-bolt text-primary-teal"></i>
-                    Quick Actions
-                </h3>
-            </div>
-            <div class="card-body d-flex flex-column gap-2">
-                <a asp-controller="Category" asp-action="Create" class="btn btn-outline-primary text-start">
-                    <i class="fas fa-tags me-2"></i> Add New Category
-                </a>
-                <a asp-controller="Supplier" asp-action="Create" class="btn btn-outline-primary text-start">
-                    <i class="fas fa-truck me-2"></i> Add New Supplier
-                </a>
-                <a asp-controller="Users" asp-action="CreatePharmacist" class="btn btn-outline-primary text-start">
-                    <i class="fas fa-user-plus me-2"></i> Create Pharmacist Account
-                </a>
-            </div>
-        </div>
-    </div>
-
-</div>
+<div class="col-lg-3 col-md-6 mb-4"><div class="metric-card metric-primary"><div><span>Today's Sales</span><h2>@Model.TodaySales.ToString("N2")</h2><small>@(Model.IsAdmin ? "All cashiers" : "Your completed sales")</small></div><i class="fas fa-cash-register"></i></div></div>
+@if (Model.IsAdmin) { <div class="col-lg-3 col-md-6 mb-4"><div class="metric-card metric-success"><div><span>Today's Net Profit</span><h2>@Model.TodayNetProfit.ToString("N2")</h2><small>After returns and expenses</small></div><i class="fas fa-chart-line"></i></div></div><div class="col-lg-3 col-md-6 mb-4"><div class="metric-card metric-warning"><div><span>Today's Expenses</span><h2>@Model.TodayExpenses.ToString("N2")</h2><small>Operating expenses recorded today</small></div><i class="fas fa-money-bill-wave"></i></div></div> }
+else { <div class="col-lg-3 col-md-6 mb-4"><div class="metric-card @(Model.OpenShift == null ? "metric-warning" : "metric-success")"><div><span>My Shift</span><h2>@(Model.OpenShift == null ? "Not open" : "Open")</h2><small>@(Model.OpenShift == null ? "Open the drawer to begin" : $"Opened {Model.OpenShift.OpenedAt.ToLocalTime():HH:mm}")</small></div><i class="fas fa-user-clock"></i></div></div> }
+<div class="col-lg-3 col-md-6 mb-4"><div class="metric-card metric-info"><div><span>Medicines</span><h2>@Model.MedicineCount</h2><small>Products in the catalogue</small></div><i class="fas fa-capsules"></i></div></div><div class="col-lg-3 col-md-6 mb-4"><div class="metric-card metric-danger"><div><span>Low-stock alerts</span><h2>@Model.LowStockCount</h2><small>Products at or below minimum</small></div><i class="fas fa-triangle-exclamation"></i></div></div></div>
+<div class="row"><div class="col-lg-7 mb-4"><div class="card h-100"><div class="card-header"><h3 class="card-title"><i class="fas fa-boxes-stacked text-primary-teal"></i> Stock needing attention</h3><a asp-controller="Medicine" asp-action="Index" class="btn btn-sm btn-outline-primary">View medicines</a></div><div class="card-body p-0">
+@if (!Model.LowStockMedicines.Any()) { <div class="empty-state py-4"><div class="empty-icon"><i class="fas fa-check-circle"></i></div><h5>Stock levels look healthy</h5><p>No medicine is currently below its minimum level.</p></div> } else { <div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Medicine</th><th>Category</th><th class="text-end">Available</th><th class="text-end">Minimum</th></tr></thead><tbody>@foreach (var medicine in Model.LowStockMedicines) { <tr><td class="fw-semibold">@medicine.Name</td><td class="text-muted">@medicine.CategoryName</td><td class="text-end text-danger fw-semibold">@medicine.TotalQuantity</td><td class="text-end">@medicine.MinimumStock</td></tr> }</tbody></table></div> }
+</div></div></div><div class="col-lg-5 mb-4"><div class="card h-100"><div class="card-header"><h3 class="card-title"><i class="fas fa-bolt text-primary-teal"></i> Quick actions</h3></div><div class="card-body d-flex flex-column gap-2">
+@if (Model.OpenShift == null) { <a asp-controller="Shift" asp-action="Open" class="btn btn-primary text-start"><i class="fas fa-door-open me-2"></i> Open my shift</a> } else { <a asp-controller="Shift" asp-action="Close" asp-route-id="@Model.OpenShift.Id" class="btn btn-outline-danger text-start"><i class="fas fa-lock me-2"></i> Close & reconcile shift</a> }
+<a asp-controller="Sale" asp-action="Create" class="btn btn-outline-primary text-start"><i class="fas fa-cart-plus me-2"></i> Create a sale</a><a asp-controller="Return" asp-action="Index" class="btn btn-outline-primary text-start"><i class="fas fa-undo-alt me-2"></i> Process a return</a>
+@if (Model.IsAdmin) { <a asp-controller="Financial" asp-action="DailySummary" class="btn btn-outline-primary text-start"><i class="fas fa-chart-pie me-2"></i> Review financial summary</a><a asp-controller="Users" asp-action="CreatePharmacist" class="btn btn-outline-primary text-start"><i class="fas fa-user-plus me-2"></i> Create pharmacist account</a> }
+</div></div></div></div>

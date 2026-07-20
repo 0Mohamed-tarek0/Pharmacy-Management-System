@@ -1,242 +1,31 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
-    <a asp-controller="Dashboard"
-       asp-action="Index"
-       class="brand-link text-center border-0">
-
-        <i class="fas fa-prescription-bottle-alt"
-           style="font-size:28px;color:white;"></i>
-
-        <span class="brand-text font-weight-bold ml-2">
-
-            PharmaCare
-
-        </span>
-
+    <a asp-controller="Dashboard" asp-action="Index" class="brand-link text-center border-0">
+        <i class="fas fa-prescription-bottle-alt" style="font-size:28px;color:white;"></i>
+        <span class="brand-text font-weight-bold ml-2">PharmaCare</span>
     </a>
-
-    <!-- Sidebar -->
     <div class="sidebar">
-        <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
-
-            <div class="image">
-
-                <div class="rounded-circle d-flex justify-content-center align-items-center"
-                     style="width:45px;
-                    height:45px;
-                    background:#14B8A6;
-                    color:white;
-                    font-weight:bold;">
-
-                    @User.Identity?.Name?.Substring(0, 1).ToUpper()
-
-                </div>
-
-            </div>
-
-            <div class="info">
-
-                <span class="d-block text-white">
-
-                    @User.Identity?.Name
-
-                </span>
-
-                <small style="color:#D1FAE5">
-
-                    Administrator
-
-                </small>
-
-            </div>
-
+            <div class="image"><div class="rounded-circle d-flex justify-content-center align-items-center" style="width:45px;height:45px;background:#14B8A6;color:white;font-weight:bold;">@User.Identity?.Name?.Substring(0, 1).ToUpper()</div></div>
+            <div class="info"><span class="d-block text-white">@User.Identity?.Name</span><small style="color:#D1FAE5">@(User.IsInRole("Admin") ? "Administrator" : "Pharmacist")</small></div>
         </div>
-
-        
-
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-                <li class="nav-item">
-
-                    <a asp-controller="Dashboard"
-                       asp-action="Index"
-                       class="nav-link">
-                        <i class="nav-icon fas fa-chart-pie"></i>
-
-                        <p>Dashboard</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Users"
-                       asp-action="CreatePharmacist"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-user-plus"></i>
-
-                        <p>Create Pharmacist</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Category"
-                       asp-action="Index"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-tags"></i>
-
-                        <p>Categories</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Supplier"
-                       asp-action="Index"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-truck"></i>
-
-                        <p>Suppliers</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Medicine"
-                       asp-action="Index"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-capsules"></i>
-
-                        <p>Medicines</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Shift"
-                       asp-action="Index"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-user-clock"></i>
-
-                        <p>Shifts</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Sale"
-                       asp-action="Index"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-cash-register"></i>
-
-                        <p>Sales</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Order"
-                       asp-action="Index"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-file-invoice"></i>
-
-                        <p>Purchase Orders</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Expense"
-                       asp-action="Index"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-money-bill-wave"></i>
-
-                        <p>Expenses</p>
-
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a asp-controller="Financial"
-                       asp-action="DailySummary"
-                       class="nav-link">
-
-                        <i class="nav-icon fas fa-chart-line"></i>
-
-                        <p>Financial Summary</p>
-
-                    </a>
-
-                </li>
-                <li class="nav-item">
-                    <a asp-controller="Return" asp-action="Index" class="nav-link">
-                        <i class="nav-icon fas fa-undo-alt"></i>
-                        <p>Returns</p>
-                    </a>
-                </li>
-                <li class="nav-header">
-
-                    ACCOUNT
-
-                </li>
-
-                <li class="nav-item">
-
-                    <form asp-controller="Auth"
-                          asp-action="Logout"
-                          method="post">
-
-                        @Html.AntiForgeryToken()
-
-                        <button type="submit"
-                                class="nav-link btn btn-link text-left w-100">
-
-                            <i class="nav-icon fas fa-sign-out-alt"></i>
-
-                            <p>
-
-                                Logout
-
-                            </p>
-
-                        </button>
-
-                    </form>
-
-                </li>
-            </ul>
-        </nav>
-        <!-- /.sidebar-menu -->
+        <nav class="mt-2"><ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <li class="nav-item"><a asp-controller="Dashboard" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-chart-pie"></i><p>Dashboard</p></a></li>
+            <li class="nav-item"><a asp-controller="Sale" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-cash-register"></i><p>Sales</p></a></li>
+            <li class="nav-item"><a asp-controller="Shift" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-user-clock"></i><p>Shifts</p></a></li>
+            <li class="nav-item"><a asp-controller="Return" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-undo-alt"></i><p>Returns</p></a></li>
+            <li class="nav-item"><a asp-controller="Medicine" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-capsules"></i><p>Medicines</p></a></li>
+            <li class="nav-item"><a asp-controller="Order" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-file-invoice"></i><p>Purchase Orders</p></a></li>
+            @if (User.IsInRole("Admin"))
+            {
+                <li class="nav-header">ADMINISTRATION</li>
+                <li class="nav-item"><a asp-controller="Users" asp-action="CreatePharmacist" class="nav-link"><i class="nav-icon fas fa-user-plus"></i><p>Create Pharmacist</p></a></li>
+                <li class="nav-item"><a asp-controller="Category" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-tags"></i><p>Categories</p></a></li>
+                <li class="nav-item"><a asp-controller="Supplier" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-truck"></i><p>Suppliers</p></a></li>
+                <li class="nav-item"><a asp-controller="Expense" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-money-bill-wave"></i><p>Expenses</p></a></li>
+                <li class="nav-item"><a asp-controller="Financial" asp-action="DailySummary" class="nav-link"><i class="nav-icon fas fa-chart-line"></i><p>Financial Summary</p></a></li>
+            }
+            <li class="nav-header">ACCOUNT</li>
+            <li class="nav-item"><form asp-controller="Auth" asp-action="Logout" method="post">@Html.AntiForgeryToken()<button type="submit" class="nav-link btn btn-link text-left w-100"><i class="nav-icon fas fa-sign-out-alt"></i><p>Logout</p></button></form></li>
+        </ul></nav>
     </div>
-    <!-- /.sidebar -->
 </aside>
