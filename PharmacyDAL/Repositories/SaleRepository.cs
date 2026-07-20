@@ -59,5 +59,14 @@ namespace PharmacyDAL.Repositories
                 .Where(s => s.InvoiceDate >= from && s.InvoiceDate <= to)
                 .SumAsync(s => (decimal?)s.TotalAmount) ?? 0m;
         }
+
+        public async Task<decimal> GetTotalByUserAndDateRangeAsync(string applicationUserId, DateTime from, DateTime to)
+        {
+            return await _dbSet
+                .Where(s => s.ApplicationUserId == applicationUserId
+                    && s.InvoiceDate >= from && s.InvoiceDate <= to
+                    && s.Status == "Completed")
+                .SumAsync(s => (decimal?)s.TotalAmount) ?? 0m;
+        }
     }
 }

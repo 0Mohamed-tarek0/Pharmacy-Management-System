@@ -1,0 +1,20 @@
+@model PharmacyBL.DTOs.Shifts.ShiftDashboardDto
+@{ ViewData["Title"] = "Shifts"; }
+
+<div class="page-header">
+    <div class="page-title"><div class="page-icon"><i class="fas fa-cash-register"></i></div><div><h1>Shifts</h1><p class="page-subtitle">Open a drawer, reconcile it when you close, and review your history.</p></div></div>
+    @if (Model.OpenShift == null) { <a asp-action="Open" class="btn btn-primary"><i class="fas fa-door-open me-1"></i> Open Shift</a> }
+</div>
+@if (TempData["Success"] != null) { <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+@if (Model.OpenShift != null)
+{
+    <div class="card card-outline card-success mb-4"><div class="card-header"><h3 class="card-title"><i class="fas fa-circle text-success me-1"></i> Open shift</h3></div><div class="card-body"><div class="row align-items-center"><div class="col-md-8"><div class="fw-semibold">Opened @Model.OpenShift.OpenedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</div><small class="text-muted">Opening cash: @Model.OpenShift.OpeningCash.ToString("N2")</small></div><div class="col-md-4 text-md-end mt-3 mt-md-0"><a asp-action="Close" asp-route-id="@Model.OpenShift.Id" class="btn btn-danger"><i class="fas fa-lock me-1"></i> Close & Reconcile</a></div></div></div></div>
+}
+else { <div class="alert alert-info">No shift is currently open. Open one before starting the register.</div> }
+
+<div class="card"><div class="card-header"><h3 class="card-title">@(Model.ShowsAllUsers ? "All Closed Shift History" : "Closed Shift History")</h3></div><div class="card-body p-0">
+@if (!Model.History.Any()) { <div class="empty-state"><div class="empty-icon"><i class="fas fa-history"></i></div><h5>No closed shifts yet</h5></div> }
+else { <div class="table-responsive"><table class="table table-hover align-middle"><thead><tr>@if (Model.ShowsAllUsers) { <th>Cashier</th> }<th>Opened</th><th>Closed</th><th class="text-end">Expected</th><th class="text-end">Actual</th><th class="text-end">Over / Short</th><th></th></tr></thead><tbody>@foreach (var shift in Model.History) { <tr>@if (Model.ShowsAllUsers) { <td>@shift.CashierName</td> }<td>@shift.OpenedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td><td>@shift.ClosedAt?.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td><td class="text-end">@shift.ExpectedCash?.ToString("N2")</td><td class="text-end">@shift.ActualCash?.ToString("N2")</td><td class="text-end @(shift.CashDifference >= 0 ? "text-success" : "text-danger")">@shift.CashDifference?.ToString("+0.00;-0.00;0.00")</td><td class="text-end"><a asp-action="Details" asp-route-id="@shift.Id" class="btn btn-outline-primary btn-sm">View</a></td></tr> }</tbody></table></div> }
+</div></div>

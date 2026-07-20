@@ -20,5 +20,7 @@ namespace PharmacyDAL.Interfaces
             params StockTransactionType[] types);
 
         Task<IEnumerable<StockTransaction>> GetReturnsWithDetailsAsync();
+
+        Task<decimal> GetSaleReturnValueByUserAndDateRangeAsync(string applicationUserId, DateTime from, DateTime to);
     }
 }

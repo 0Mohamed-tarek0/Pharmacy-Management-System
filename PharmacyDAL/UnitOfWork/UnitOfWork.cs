@@ -26,6 +26,7 @@ namespace PharmacyDAL.UnitOfWork
         private IGenericRepository<PharmacyDAL.Models.SaleItem> _saleItems;
         private IExpenseCategoryRepository _expenseCategories;
         private IExpenseRepository _expenses;
+        private IShiftRepository _shifts;
 
         public UnitOfWork(DbContext.ApplicationDbContext context)
         {
@@ -71,6 +72,9 @@ namespace PharmacyDAL.UnitOfWork
 
         public IExpenseRepository Expenses =>
             _expenses ??= new ExpenseRepository(_context);
+
+        public IShiftRepository Shifts =>
+            _shifts ??= new ShiftRepository(_context);
 
         public async Task<int> SaveChangesAsync()
         {
