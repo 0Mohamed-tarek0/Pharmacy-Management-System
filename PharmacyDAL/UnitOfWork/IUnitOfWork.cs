@@ -23,6 +23,7 @@ namespace PharmacyDAL.UnitOfWork
         IGenericRepository<PharmacyDAL.Models.SaleItem> SaleItems { get; }
         IExpenseCategoryRepository ExpenseCategories { get; }
         IExpenseRepository Expenses { get; }
+        IShiftRepository Shifts { get; }
         Task<int> SaveChangesAsync();
 
         Task<IDbContextTransaction> BeginTransactionAsync();

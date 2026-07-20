@@ -13,5 +13,6 @@ namespace PharmacyDAL.Models
         // Navigation properties
         public ICollection<Sale> Sales { get; set; } = new List<Sale>();
         public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Shift> Shifts { get; set; } = new List<Shift>();
     }
 }

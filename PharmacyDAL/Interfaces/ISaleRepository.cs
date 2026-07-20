@@ -24,5 +24,7 @@ namespace PharmacyDAL.Interfaces
         /// whose <see cref="Sale.InvoiceDate"/> falls within [from, to].
         /// </summary>
         Task<decimal> GetTotalByDateRangeAsync(DateTime from, DateTime to);
+
+        Task<decimal> GetTotalByUserAndDateRangeAsync(string applicationUserId, DateTime from, DateTime to);
     }
 }

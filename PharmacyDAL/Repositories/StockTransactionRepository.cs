@@ -55,5 +55,14 @@ namespace PharmacyDAL.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<decimal> GetSaleReturnValueByUserAndDateRangeAsync(string applicationUserId, DateTime from, DateTime to)
+        {
+            return await _dbSet
+                .Where(t => t.ApplicationUserId == applicationUserId
+                    && t.TransactionDate >= from && t.TransactionDate <= to
+                    && t.Type == StockTransactionType.SaleReturn)
+                .SumAsync(t => (decimal?)(t.Quantity * (t.MedicineBatch == null ? 0m : t.MedicineBatch.SellingPrice))) ?? 0m;
+        }
     }
 }
