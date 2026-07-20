@@ -27,5 +27,12 @@ namespace PharmacyDAL.Repositories
                 .Include(e => e.ApplicationUser)
                 .SingleOrDefaultAsync(e => e.Id == id);
         }
+
+        public async Task<decimal> GetTotalByDateRangeAsync(DateTime from, DateTime to)
+        {
+            return await _dbSet
+                .Where(e => e.ExpenseDate >= from && e.ExpenseDate <= to)
+                .SumAsync(e => (decimal?)e.Amount) ?? 0m;
+        }
     }
 }

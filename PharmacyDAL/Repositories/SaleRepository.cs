@@ -52,5 +52,12 @@ namespace PharmacyDAL.Repositories
                 .OrderByDescending(s => s.InvoiceDate)
                 .ToListAsync();
         }
+
+        public async Task<decimal> GetTotalByDateRangeAsync(DateTime from, DateTime to)
+        {
+            return await _dbSet
+                .Where(s => s.InvoiceDate >= from && s.InvoiceDate <= to)
+                .SumAsync(s => (decimal?)s.TotalAmount) ?? 0m;
+        }
     }
 }

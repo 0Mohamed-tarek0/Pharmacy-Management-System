@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +18,12 @@ namespace PharmacyDAL.Interfaces
         Task<IEnumerable<Order>> GetOrdersByUserAsync(string applicationUserId);
 
         Task<IEnumerable<Order>> GetAllWithDetailsAsync();
+
+        /// <summary>
+        /// Returns the SUM of <see cref="Order.TotalAmount"/> for received orders
+        /// whose <see cref="Order.OrderDate"/> falls within [from, to].
+        /// </summary>
+        Task<decimal> GetTotalByDateRangeAsync(DateTime from, DateTime to);
 
         //Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status);
     }

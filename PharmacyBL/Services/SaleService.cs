@@ -306,6 +306,7 @@ namespace PharmacyBL.Services
                         Quantity = takeBack,
                         ReferenceType = "Sale",
                         ReferenceId = saleItem.SaleId,
+                        ApplicationUserId = dto.ApplicationUserId,
                         Notes = string.IsNullOrWhiteSpace(dto.Reason)
                             ? $"Customer return from sale item #{saleItem.Id}"
                             : dto.Reason

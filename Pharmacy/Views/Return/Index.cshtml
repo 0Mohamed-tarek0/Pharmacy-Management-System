@@ -1,0 +1,212 @@
+﻿@model IEnumerable<PharmacyBL.DTOs.Returns.ReturnRecordDto>
+
+@{
+    ViewData["Title"] = "Returns";
+}
+
+<style>
+    /* Scoped, self-contained styling for the "View Order"/"View Sale" buttons on this
+           page - defined explicitly (rather than relying on .btn-outline-primary) so the
+           text always has guaranteed contrast, regardless of any other CSS on the page. */
+    .btn-return-view {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+        color: #0F766E;
+        background-color: #ffffff;
+        border: 1px solid #0F766E;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: .15s;
+    }
+
+        .btn-return-view:hover,
+        .btn-return-view:focus {
+            color: #ffffff;
+            background-color: #0F766E;
+            border-color: #0F766E;
+            text-decoration: none;
+        }
+</style>
+
+<div class="page-header">
+    <div class="page-title">
+        <div class="page-icon">
+            <i class="fas fa-rotate-left"></i>
+        </div>
+        <div>
+            <h1>Returns</h1>
+            <p class="page-subtitle">Every return to a supplier (from a purchase order) or from a customer (from a sale), in one place.</p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-list text-primary-teal"></i>
+            All Returns
+        </h3>
+        <span class="badge badge-soft-primary">@Model.Count() total</span>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row g-2 mb-3">
+            <div class="col-md-4">
+                <input type="text" id="returnsSearch" class="form-control"
+                       placeholder="Search medicine, batch, document #, or performed by..." autocomplete="off" />
+            </div>
+            <div class="col-md-3">
+                <select id="returnsTypeFilter" class="form-control">
+                    <option value="">All types</option>
+                    <option value="Purchase">To supplier (purchase orders)</option>
+                    <option value="Sale">From customer (sales)</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input type="date" id="returnsFromDate" class="form-control" title="From date" />
+            </div>
+            <div class="col-md-2">
+                <input type="date" id="returnsToDate" class="form-control" title="To date" />
+            </div>
+            <div class="col-md-1">
+                <button type="button" id="returnsClearFilters" class="btn btn-outline-secondary w-100" title="Clear filters">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-rotate-left"></i>
+                </div>
+                <h5>No returns recorded yet</h5>
+                <p>Returns to suppliers or from customers will show up here once recorded from an Order or Sale.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="returnsTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Document #</th>
+                            <th>Medicine</th>
+                            <th>Batch</th>
+                            <th class="text-center">Quantity</th>
+                            <th>Reason</th>
+                            <th>Performed By</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model)
+                        {
+                            <tr data-type="@r.ReturnType"
+                                data-date="@r.TransactionDate.ToString("yyyy-MM-dd")"
+                                data-search="@($"{r.MedicineName} {r.BatchNumber} {r.DocumentNumber} {r.PerformedBy}".ToLowerInvariant())">
+                                <td class="text-muted">@r.TransactionDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td>
+                                    @if (r.ReturnType == "Purchase")
+                                    {
+                                        <span class="badge bg-warning text-dark">To Supplier</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">From Customer</span>
+                                    }
+                                </td>
+                                <td>@r.DocumentNumber</td>
+                                <td>@r.MedicineName</td>
+                                <td>@r.BatchNumber</td>
+                                <td class="text-center">@r.Quantity</td>
+                                <td class="text-muted">@(string.IsNullOrWhiteSpace(r.Notes) ? "-" : r.Notes)</td>
+                                <td>@r.PerformedBy</td>
+                                <td class="text-end pe-3">
+                                    @if (r.ReturnType == "Purchase")
+                                    {
+                                        <a asp-controller="Order" asp-action="Details" asp-route-id="@r.DocumentId"
+                                           class="btn-return-view" title="View Order">
+                                            <i class="fas fa-eye"></i> View Order
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Sale" asp-action="Details" asp-route-id="@r.DocumentId"
+                                           class="btn-return-view" title="View Sale">
+                                            <i class="fas fa-eye"></i> View Sale
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <p id="returnsFilterEmpty" class="text-muted text-center" style="display:none;">No returns match your search/filters.</p>
+        }
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        const returnsSearchInput = document.getElementById('returnsSearch');
+        const returnsTypeFilter = document.getElementById('returnsTypeFilter');
+        const returnsFromDate = document.getElementById('returnsFromDate');
+        const returnsToDate = document.getElementById('returnsToDate');
+        const returnsClearFilters = document.getElementById('returnsClearFilters');
+        const returnsRows = document.querySelectorAll('#returnsTable tbody tr[data-search]');
+        const returnsFilterEmpty = document.getElementById('returnsFilterEmpty');
+
+        function applyReturnsFilters() {
+            const query = returnsSearchInput.value.trim().toLowerCase();
+            const type = returnsTypeFilter.value;
+            const from = returnsFromDate.value;
+            const to = returnsToDate.value;
+            let visibleCount = 0;
+
+            returnsRows.forEach(row => {
+                const matchesQuery = !query || row.dataset.search.includes(query);
+                const matchesType = !type || row.dataset.type === type;
+                const matchesFrom = !from || row.dataset.date >= from;
+                const matchesTo = !to || row.dataset.date <= to;
+
+                const matches = matchesQuery && matchesType && matchesFrom && matchesTo;
+                row.style.display = matches ? '' : 'none';
+                if (matches) visibleCount++;
+            });
+
+            if (returnsFilterEmpty) {
+                returnsFilterEmpty.style.display = visibleCount === 0 ? '' : 'none';
+            }
+        }
+
+        if (returnsSearchInput) {
+            returnsSearchInput.addEventListener('input', applyReturnsFilters);
+            returnsTypeFilter.addEventListener('change', applyReturnsFilters);
+            returnsFromDate.addEventListener('change', applyReturnsFilters);
+            returnsToDate.addEventListener('change', applyReturnsFilters);
+
+            returnsClearFilters.addEventListener('click', function() {
+                returnsSearchInput.value = '';
+                returnsTypeFilter.value = '';
+                returnsFromDate.value = '';
+                returnsToDate.value = '';
+                applyReturnsFilters();
+            });
+        }
+    </script>
+}

@@ -80,6 +80,7 @@ namespace Pharmacy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReturnItem(ReturnSaleItemDto dto)
         {
+            dto.ApplicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
             var result = await _saleService.ReturnItemAsync(dto);
 
             if (result.Success)

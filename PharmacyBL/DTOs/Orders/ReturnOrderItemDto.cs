@@ -21,5 +21,7 @@ namespace PharmacyBL.DTOs.Orders
 
         [MaxLength(300)]
         public string? Reason { get; set; }
+
+        public string ApplicationUserId { get; set; } = string.Empty;
     }
 }
