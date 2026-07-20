@@ -47,6 +47,8 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ISaleService, SaleService>();
 builder.Services.AddScoped<IExpenseCategoryService, ExpenseCategoryService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IFinancialService, FinancialService>();
+builder.Services.AddScoped<IReturnService, ReturnService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();

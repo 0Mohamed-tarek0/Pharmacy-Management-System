@@ -10,9 +10,15 @@
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Purchase Orders</h3>
-        <div class="card-tools">
-            <a asp-action="Create" class="btn btn-primary">New Order</a>
+        <div class="d-flex gap-2">
+           @*  <a asp-controller="Return" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-rotate-left me-1"></i> Returns
+            </a> *@
+            <div class="card-tools">
+                <a asp-action="Create" class="btn btn-primary">New Order</a>
+            </div>
         </div>
+        
     </div>
 
     <div class="card-body">

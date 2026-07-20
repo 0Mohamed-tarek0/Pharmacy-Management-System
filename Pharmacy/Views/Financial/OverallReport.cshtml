@@ -1,0 +1,391 @@
+﻿@* @model PharmacyBL.DTOs.Financial.OverallFinancialReportDto
+
+<div class="card">
+
+    <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">
+            Overall Financial Report
+        </h3>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-4 mb-3">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>@Model.TotalSales.ToString("N2")</h3>
+                        <p>Total Sales</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>@Model.TotalPurchases.ToString("N2")</h3>
+                        <p>Total Purchases</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>@Model.TotalExpenses.ToString("N2")</h3>
+                        <p>Total Expenses</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>@Model.TotalSalesReturns.ToString("N2")</h3>
+                        <p>Sales Returns</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="small-box bg-secondary">
+                    <div class="inner">
+                        <h3>@Model.TotalPurchaseReturns.ToString("N2")</h3>
+                        <p>Purchase Returns</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+
+                <div class="small-box bg-primary">
+
+                    <div class="inner">
+
+                        <h2>@Model.NetCashFlow.ToString("N2")</h2>
+
+                        <p>Net Cash Flow</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <hr />
+
+        <h4 class="mb-3">
+            Statistics
+        </h4>
+
+        <table class="table table-bordered table-striped">
+
+            <thead>
+
+                <tr>
+
+                    <th>Metric</th>
+
+                    <th width="200">
+                        Count
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Sales Invoices</td>
+                    <td>@Model.TotalSalesInvoices</td>
+                </tr>
+
+                <tr>
+                    <td>Purchase Orders</td>
+                    <td>@Model.TotalPurchaseOrders</td>
+                </tr>
+
+                <tr>
+                    <td>Sales Returns</td>
+                    <td>@Model.TotalSalesReturnsCount</td>
+                </tr>
+
+                <tr>
+                    <td>Purchase Returns</td>
+                    <td>@Model.TotalPurchaseReturnsCount</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div> *@
+
+                    @model PharmacyBL.DTOs.Financial.OverallFinancialReportDto
+
+@{
+    ViewData["Title"] = "Overall Financial Report";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h3 class="m-0">
+                    <i class="fas fa-chart-line text-primary"></i>
+                    Overall Financial Report
+                </h3>
+            </div>
+
+            <div class="col-sm-6 text-right">
+                <a asp-action="DailySummary" class="btn btn-outline-primary">
+                    <i class="fas fa-calendar-day"></i>
+                    Daily Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="content">
+
+    <div class="container-fluid">
+
+        <!-- First Row -->
+
+        <div class="row">
+
+            <div class="col-lg-3 col-6">
+
+                <div class="small-box bg-success">
+
+                    <div class="inner">
+                        <h3>@Model.TotalSales.ToString("N2")</h3>
+                        <p>Total Sales</p>
+                    </div>
+
+                    <div class="icon">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-3 col-6">
+
+                <div class="small-box bg-info">
+
+                    <div class="inner">
+                        <h3>@Model.TotalPurchases.ToString("N2")</h3>
+                        <p>Total Purchases</p>
+                    </div>
+
+                    <div class="icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-3 col-6">
+
+                <div class="small-box bg-warning">
+
+                    <div class="inner">
+                        <h3>@Model.TotalExpenses.ToString("N2")</h3>
+                        <p>Total Expenses</p>
+                    </div>
+
+                    <div class="icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-3 col-6">
+
+                <div class="small-box bg-primary">
+
+                    <div class="inner">
+                        <h3>@Model.NetCashFlow.ToString("N2")</h3>
+                        <p>Net Cash Flow</p>
+                    </div>
+
+                    <div class="icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Second Row -->
+
+
+        <div class="row">
+
+            <div class="col-lg-6">
+
+                <div class="card card-danger">
+
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-undo"></i>
+                            Returns
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table table-bordered">
+
+                            <tr>
+
+                                <th>Sales Returns</th>
+
+                                <td class="text-danger font-weight-bold">
+                                    @Model.TotalSalesReturns.ToString("N2")
+                                </td>
+
+                            </tr>
+
+                            <tr>
+
+                                <th>Purchase Returns</th>
+
+                                <td class="text-warning font-weight-bold">
+                                    @Model.TotalPurchaseReturns.ToString("N2")
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-6">
+
+                <div class="card card-primary">
+
+                    <div class="card-header">
+
+                        <h3 class="card-title">
+
+                            <i class="fas fa-list"></i>
+
+                            Statistics
+
+                        </h3>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table table-hover">
+
+                            <tr>
+                                <th>Sales Invoices</th>
+                                <td>@Model.TotalSalesInvoices</td>
+                            </tr>
+
+                            <tr>
+                                <th>Purchase Orders</th>
+                                <td>@Model.TotalPurchaseOrders</td>
+                            </tr>
+
+                            <tr>
+                                <th>Sales Returns</th>
+                                <td>@Model.TotalSalesReturnsCount</td>
+                            </tr>
+
+                            <tr>
+                                <th>Purchase Returns</th>
+                                <td>@Model.TotalPurchaseReturnsCount</td>
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Profit Card -->
+
+
+        <div class="card card-success">
+
+            <div class="card-header">
+
+                <h3 class="card-title">
+
+                    <i class="fas fa-wallet"></i>
+
+                    Profit Summary
+
+                </h3>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row text-center">
+
+                    <div class="col-md-6">
+
+                        <h5>Gross Profit</h5>
+@* 
+                        <h2 class="text-primary">
+
+                            @Model.GrossProfit.ToString("N2")
+
+                        </h2> *@
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <h5>Net Income</h5>
+
+                        <h2 class="text-success">
+
+                            @Model.NetCashFlow.ToString("N2")
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

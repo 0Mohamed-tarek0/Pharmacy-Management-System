@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,6 +54,16 @@ namespace PharmacyDAL.Repositories
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
+
+        public async Task<decimal> GetTotalByDateRangeAsync(DateTime from, DateTime to)
+        {
+            return await _dbSet
+                .Where(o => o.OrderDate >= from
+                         && o.OrderDate <= to
+                         && o.Status == PharmacyDAL.Enums.OrderStatus.Received)
+                .SumAsync(o => (decimal?)o.TotalAmount) ?? 0m;
+        }
+
         //public async Task<IEnumerable<Order>> GetOrdersByStatusAsync(string status)
         //{
         //    return await _dbSet

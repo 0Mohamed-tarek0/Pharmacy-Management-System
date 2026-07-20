@@ -32,5 +32,8 @@ namespace PharmacyDAL.Models
         public int? ReferenceId { get; set; }
 
         public string? Notes { get; set; }
+
+        public string? ApplicationUserId { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
     }
 }

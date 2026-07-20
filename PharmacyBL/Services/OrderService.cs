@@ -345,6 +345,7 @@ namespace PharmacyBL.Services
                     Quantity = -baseReturnQuantity,
                     ReferenceType = "Order",
                     ReferenceId = orderItem.OrderId,
+                    ApplicationUserId = dto.ApplicationUserId,
                     Notes = string.IsNullOrWhiteSpace(dto.Reason)
                         ? $"Returned to supplier from order item #{orderItem.Id}"
                         : dto.Reason

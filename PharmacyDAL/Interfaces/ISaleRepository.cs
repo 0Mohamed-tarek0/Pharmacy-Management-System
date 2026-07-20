@@ -18,5 +18,11 @@ namespace PharmacyDAL.Interfaces
         Task<IEnumerable<Sale>> GetSalesByDateRangeAsync(DateTime from, DateTime to);
 
         Task<IEnumerable<Sale>> GetAllWithDetailsAsync();
+
+        /// <summary>
+        /// Returns the SUM of <see cref="Sale.TotalAmount"/> for completed sales
+        /// whose <see cref="Sale.InvoiceDate"/> falls within [from, to].
+        /// </summary>
+        Task<decimal> GetTotalByDateRangeAsync(DateTime from, DateTime to);
     }
 }
