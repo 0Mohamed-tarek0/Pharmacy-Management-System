@@ -2,8 +2,8 @@
 @{
     ViewData["Title"] = "Daily Financial Summary";
     var isToday = Model.Date.Date == DateTime.UtcNow.Date;
-    var prevDay  = Model.Date.AddDays(-1);
-    var nextDay  = Model.Date.AddDays(1);
+    var prevDay = Model.Date.AddDays(-1);
+    var nextDay = Model.Date.AddDays(1);
 }
 
 <div class="page-header">
@@ -14,7 +14,7 @@
         <div>
             <h1>Daily Financial Summary</h1>
             <p class="page-subtitle">
-                Overview of income, costs and profit for
+                Overview of income, cost and profit for
                 <strong>@Model.Date.ToString("dddd, dd MMMM yyyy")</strong>
             </p>
         </div>
@@ -22,9 +22,8 @@
 
     <a asp-action="OverallReport"
        class="btn btn-success">
-
+        <i class="fas fa-chart-pie me-1"></i>
         Overall Financial Report
-
     </a>
 </div>
 
@@ -67,18 +66,18 @@
     </div>
 </div>
 
-@* ── Revenue Cards ─────────────────────────────────────────────────────── *@
+@* ── Revenue / Cost / Expense Cards ───────────────────────────────────── *@
 <div class="row">
 
     @* Sales *@
-    <div class="col-lg-4 col-md-6 mb-4">
+    <div class="col-lg-3 col-md-6 mb-4">
         <div class="card card-hover h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <h6 class="text-muted mb-1">Gross Sales</h6>
                         <h2 class="font-weight-bold mb-1">@Model.Sales.ToString("N2") EGP</h2>
-                        <span class="badge bg-success">Cash In</span>
+                        <span class="badge bg-success">Revenue</span>
                     </div>
                     <div class="dashboard-icon" style="background:var(--success-color);">
                         <i class="fas fa-cash-register"></i>
@@ -89,7 +88,7 @@
                     <hr class="my-2" />
                     <small class="text-danger">
                         <i class="fas fa-undo-alt me-1"></i>
-                        Sales Returns: −@Model.SalesReturns.ToString("N2") EGP
+                        Returns: −@Model.SalesReturns.ToString("N2") EGP
                     </small>
                     <br />
                     <small class="text-muted">
@@ -100,13 +99,35 @@
         </div>
     </div>
 
-    @* Purchases *@
-    <div class="col-lg-4 col-md-6 mb-4">
+    @* Cost of Goods Sold *@
+    <div class="col-lg-3 col-md-6 mb-4">
         <div class="card card-hover h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <h6 class="text-muted mb-1">Gross Purchases</h6>
+                        <h6 class="text-muted mb-1">Cost of Goods Sold</h6>
+                        <h2 class="font-weight-bold mb-1">@Model.CostOfGoodsSold.ToString("N2") EGP</h2>
+                        <span class="badge bg-secondary">Cost</span>
+                    </div>
+                    <div class="dashboard-icon" style="background:#64748B;">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                </div>
+                <hr class="my-2" />
+                <small class="text-muted">
+                    Purchase-price value of the units sold today, net of returns
+                </small>
+            </div>
+        </div>
+    </div>
+
+    @* Purchases (restocking, not a cost of today's sales) *@
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card card-hover h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="text-muted mb-1">Restocking Purchases</h6>
                         <h2 class="font-weight-bold mb-1">@Model.Purchases.ToString("N2") EGP</h2>
                         <span class="badge bg-warning text-dark">Cash Out</span>
                     </div>
@@ -119,7 +140,7 @@
                     <hr class="my-2" />
                     <small class="text-success">
                         <i class="fas fa-undo-alt me-1"></i>
-                        Purchase Returns: +@Model.PurchaseReturns.ToString("N2") EGP
+                        Returned to supplier: +@Model.PurchaseReturns.ToString("N2") EGP
                     </small>
                     <br />
                     <small class="text-muted">
@@ -131,7 +152,7 @@
     </div>
 
     @* Expenses *@
-    <div class="col-lg-4 col-md-6 mb-4">
+    <div class="col-lg-3 col-md-6 mb-4">
         <div class="card card-hover h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start">
@@ -154,8 +175,8 @@
 <div class="row">
 
     @* Gross Profit *@
-    <div class="col-md-6 mb-4">
-        <div class="card card-hover h-100 @(Model.GrossProfit >= 0 ? "border-left-success" : "border-left-danger")"
+    <div class="col-lg-4 mb-4">
+        <div class="card card-hover h-100"
              style="border-left: 4px solid @(Model.GrossProfit >= 0 ? "var(--success-color)" : "var(--danger-color)");">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -164,39 +185,33 @@
                         <h2 class="font-weight-bold mb-0 @(Model.GrossProfit >= 0 ? "text-success" : "text-danger")">
                             @(Model.GrossProfit >= 0 ? "" : "−")@Math.Abs(Model.GrossProfit).ToString("N2") EGP
                         </h2>
-                        <small class="text-muted">Net Sales − Net Purchases</small>
+                        <small class="text-muted">Net Sales − Cost of Goods Sold</small>
                     </div>
                     <div class="dashboard-icon"
                          style="background:@(Model.GrossProfit >= 0 ? "var(--success-color)" : "var(--danger-color)");">
                         <i class="fas fa-chart-bar"></i>
                     </div>
                 </div>
-
                 <hr />
-
-                <div class="row text-center">
-                    <div class="col-6">
-                        <small class="text-muted d-block">Net Sales</small>
-                        <strong>@Model.NetSales.ToString("N2") EGP</strong>
-                    </div>
-                    <div class="col-6">
-                        <small class="text-muted d-block">Net Purchases</small>
-                        <strong>@Model.NetPurchases.ToString("N2") EGP</strong>
-                    </div>
+                <div class="text-center">
+                    <small class="text-muted d-block">Margin on Net Sales</small>
+                    <strong class="@(Model.GrossProfit >= 0 ? "text-success" : "text-danger")">
+                        @Model.GrossProfitMarginPercent.ToString("N1")%
+                    </strong>
                 </div>
             </div>
         </div>
     </div>
 
     @* Net Profit *@
-    <div class="col-md-6 mb-4">
+    <div class="col-lg-4 mb-4">
         <div class="card card-hover h-100"
              style="border-left: 4px solid @(Model.NetProfit >= 0 ? "var(--primary-color)" : "var(--danger-color)");">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="text-muted mb-1">Net Profit</h6>
-                        <h2 class="font-weight-bold mb-0 @(Model.NetProfit >= 0 ? "text-primary" : "text-danger")">
+                        <h2 class="font-weight-bold mb-0 @(Model.NetProfit >= 0 ? "text-primary-teal" : "text-danger")">
                             @(Model.NetProfit >= 0 ? "" : "−")@Math.Abs(Model.NetProfit).ToString("N2") EGP
                         </h2>
                         <small class="text-muted">Gross Profit − Expenses</small>
@@ -206,21 +221,39 @@
                         <i class="fas fa-sack-dollar"></i>
                     </div>
                 </div>
-
                 <hr />
+                <div class="text-center">
+                    <small class="text-muted d-block">Margin on Net Sales</small>
+                    <strong class="@(Model.NetProfit >= 0 ? "text-primary-teal" : "text-danger")">
+                        @Model.NetProfitMarginPercent.ToString("N1")%
+                    </strong>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="row text-center">
-                    <div class="col-6">
-                        <small class="text-muted d-block">Gross Profit</small>
-                        <strong class="@(Model.GrossProfit >= 0 ? "text-success" : "text-danger")">
-                            @(Model.GrossProfit >= 0 ? "" : "−")@Math.Abs(Model.GrossProfit).ToString("N2") EGP
-                        </strong>
+    @* Cash Flow — distinct from profit *@
+    <div class="col-lg-4 mb-4">
+        <div class="card card-hover h-100"
+             style="border-left: 4px solid @(Model.NetCashFlow >= 0 ? "var(--info-color)" : "var(--danger-color)");">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Cash Flow</h6>
+                        <h2 class="font-weight-bold mb-0 @(Model.NetCashFlow >= 0 ? "text-info" : "text-danger")">
+                            @(Model.NetCashFlow >= 0 ? "" : "−")@Math.Abs(Model.NetCashFlow).ToString("N2") EGP
+                        </h2>
+                        <small class="text-muted">Net Sales − Net Purchases − Expenses</small>
                     </div>
-                    <div class="col-6">
-                        <small class="text-muted d-block">Expenses</small>
-                        <strong class="text-danger">@Model.Expenses.ToString("N2") EGP</strong>
+                    <div class="dashboard-icon"
+                         style="background:@(Model.NetCashFlow >= 0 ? "var(--info-color)" : "var(--danger-color)");">
+                        <i class="fas fa-wallet"></i>
                     </div>
                 </div>
+                <hr />
+                <small class="text-muted d-block text-center">
+                    Cash movement, not profit — restocking spend rarely equals what was sold today
+                </small>
             </div>
         </div>
     </div>
@@ -250,7 +283,7 @@
                         <tr>
                             <td><i class="fas fa-cash-register text-success me-2"></i> Gross Sales</td>
                             <td class="text-end text-success fw-bold">+@Model.Sales.ToString("N2")</td>
-                            <td class="text-center"><span class="badge bg-success">Cash In</span></td>
+                            <td class="text-center"><span class="badge bg-success">Revenue</span></td>
                         </tr>
                         <tr>
                             <td><i class="fas fa-undo-alt text-danger me-2"></i> Sales Returns</td>
@@ -263,24 +296,14 @@
                             <td></td>
                         </tr>
                         <tr>
-                            <td><i class="fas fa-file-invoice text-warning me-2"></i> Gross Purchases</td>
-                            <td class="text-end text-warning fw-bold">−@Model.Purchases.ToString("N2")</td>
-                            <td class="text-center"><span class="badge bg-warning text-dark">Cash Out</span></td>
-                        </tr>
-                        <tr>
-                            <td><i class="fas fa-undo-alt text-success me-2"></i> Purchase Returns</td>
-                            <td class="text-end text-success fw-bold">+@Model.PurchaseReturns.ToString("N2")</td>
-                            <td class="text-center"><span class="badge bg-success">Recovery</span></td>
-                        </tr>
-                        <tr class="table-light fw-semibold">
-                            <td><i class="fas fa-equals me-2"></i> Net Purchases</td>
-                            <td class="text-end">@Model.NetPurchases.ToString("N2")</td>
-                            <td></td>
+                            <td><i class="fas fa-tags text-secondary me-2"></i> Cost of Goods Sold</td>
+                            <td class="text-end text-secondary fw-bold">−@Model.CostOfGoodsSold.ToString("N2")</td>
+                            <td class="text-center"><span class="badge bg-secondary">Cost</span></td>
                         </tr>
                         <tr class="@(Model.GrossProfit >= 0 ? "table-success" : "table-danger") fw-bold">
-                            <td><i class="fas fa-chart-bar me-2"></i> Gross Profit (Net Sales − Net Purchases)</td>
+                            <td><i class="fas fa-chart-bar me-2"></i> Gross Profit (Net Sales − COGS)</td>
                             <td class="text-end">@(Model.GrossProfit >= 0 ? "+" : "−")@Math.Abs(Model.GrossProfit).ToString("N2")</td>
-                            <td></td>
+                            <td class="text-center">@Model.GrossProfitMarginPercent.ToString("N1")% margin</td>
                         </tr>
                         <tr>
                             <td><i class="fas fa-money-bill-wave text-danger me-2"></i> Expenses</td>
@@ -290,6 +313,24 @@
                         <tr class="@(Model.NetProfit >= 0 ? "table-success" : "table-danger") fw-bolder" style="font-size:1.05rem;">
                             <td><i class="fas fa-sack-dollar me-2"></i> Net Profit (Gross Profit − Expenses)</td>
                             <td class="text-end">@(Model.NetProfit >= 0 ? "+" : "−")@Math.Abs(Model.NetProfit).ToString("N2")</td>
+                            <td class="text-center">@Model.NetProfitMarginPercent.ToString("N1")% margin</td>
+                        </tr>
+                        <tr class="table-secondary">
+                            <td colspan="3" class="text-muted"><small><i class="fas fa-info-circle me-1"></i> Below: restocking cash flow — separate from profit above</small></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-file-invoice text-warning me-2"></i> Restocking Purchases</td>
+                            <td class="text-end text-warning fw-bold">−@Model.Purchases.ToString("N2")</td>
+                            <td class="text-center"><span class="badge bg-warning text-dark">Cash Out</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-undo-alt text-success me-2"></i> Purchase Returns</td>
+                            <td class="text-end text-success fw-bold">+@Model.PurchaseReturns.ToString("N2")</td>
+                            <td class="text-center"><span class="badge bg-success">Recovery</span></td>
+                        </tr>
+                        <tr class="@(Model.NetCashFlow >= 0 ? "table-info" : "table-danger") fw-bold">
+                            <td><i class="fas fa-wallet me-2"></i> Cash Flow (Net Sales − Net Purchases − Expenses)</td>
+                            <td class="text-end">@(Model.NetCashFlow >= 0 ? "+" : "−")@Math.Abs(Model.NetCashFlow).ToString("N2")</td>
                             <td></td>
                         </tr>
                     </tbody>
