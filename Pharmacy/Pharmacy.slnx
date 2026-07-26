@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="../PharmacyAPI/PharmacyAPI.csproj" Id="cbecf609-1e00-4963-bf58-299ac836803f" />
   <Project Path="../PharmacyBL/PharmacyBL.csproj" />
   <Project Path="../PharmacyDAL/PharmacyDAL.csproj" />
   <Project Path="Pharmacy.csproj" />
