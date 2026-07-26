@@ -14,7 +14,7 @@ namespace PharmacyBL.Services
             _unitOfWork = unitOfWork;
         }
 
-        /// <inheritdoc/>
+        
         public async Task<DailyFinancialSummaryDto> GetDailySummaryAsync(DateTime? date = null)
         {
             // Normalise the target date to a UTC calendar day boundary.
@@ -86,6 +86,45 @@ namespace PharmacyBL.Services
                 CostOfGoodsSold = netCostOfGoodsSold
             };
         }
+
+ /// -------------------------------------------------------------------------------------------------------------------------------------------------
+
+        public async Task<DailyFinancialSummaryDto> GetSummaryForRangeAsync(DateTime from, DateTime to)
+        {
+            var rangeStart = from.Date;
+            var rangeEnd = to.Date.AddDays(1).AddTicks(-1);
+            var sales = await _unitOfWork.Sales.GetTotalByDateRangeAsync(rangeStart, rangeEnd);
+            var purchases = await _unitOfWork.Orders.GetTotalByDateRangeAsync(rangeStart, rangeEnd);
+            var expenses = await _unitOfWork.Expenses.GetTotalByDateRangeAsync(rangeStart, rangeEnd);
+            var saleReturns = await _unitOfWork.StockTransactions.GetByDateRangeWithBatchAsync(
+                rangeStart, rangeEnd, StockTransactionType.SaleReturn);
+            var purchaseReturns = await _unitOfWork.StockTransactions.GetByDateRangeWithBatchAsync(
+                rangeStart, rangeEnd, StockTransactionType.PurchaseReturn);
+            var saleTransactions = await _unitOfWork.StockTransactions.GetByDateRangeWithBatchAsync(
+                rangeStart, rangeEnd, StockTransactionType.Sale);
+
+            var salesReturnsValue = saleReturns.Sum(t => t.MedicineBatch == null
+                ? 0m : t.Quantity * t.MedicineBatch.SellingPrice);
+            var purchaseReturnsValue = purchaseReturns.Sum(t => t.MedicineBatch == null
+                ? 0m : Math.Abs(t.Quantity) * t.MedicineBatch.PurchasePrice);
+            var costOfGoodsSold = saleTransactions.Sum(t => t.MedicineBatch == null
+                ? 0m : Math.Abs(t.Quantity) * t.MedicineBatch.PurchasePrice);
+            var costOfGoodsReturned = saleReturns.Sum(t => t.MedicineBatch == null
+                ? 0m : t.Quantity * t.MedicineBatch.PurchasePrice);
+
+            return new DailyFinancialSummaryDto
+            {
+                Date = rangeStart,
+                Sales = sales,
+                Purchases = purchases,
+                SalesReturns = salesReturnsValue,
+                PurchaseReturns = purchaseReturnsValue,
+                Expenses = expenses,
+                CostOfGoodsSold = costOfGoodsSold - costOfGoodsReturned
+            };
+        }
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
 
         public async Task<OverallFinancialReportDto> GetOverallFinancialReportAsync()
         {

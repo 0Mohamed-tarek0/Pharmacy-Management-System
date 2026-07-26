@@ -5,6 +5,7 @@ x64/
 x86/
 [Bb]in/
 [Oo]bj/
+.shift-obj/
 
 ## Visual Studio
 .vs/

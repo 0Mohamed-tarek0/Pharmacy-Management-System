@@ -1,0 +1,558 @@
+@* @model Pharmacy.ViewModels.Financial.FinancialReportViewModel
+@{ ViewData["Title"] = "Financial Insights"; var s = Model.Summary; }
+
+<div class="page-header">
+	<div class="page-title">
+		<div class="page-icon">
+			<i class="fas fa-chart-line"></i>
+		</div>
+		<div>
+			<h1>Financial Insights</h1>
+			<p class="page-subtitle">
+				@Model.PeriodLabel: <strong>@Model.From.ToString("dd MMM yyyy")</strong> to <strong>@Model.To.ToString("dd MMM yyyy")</strong>
+			</p>
+		</div>
+	</div>
+</div>
+
+@if (TempData["Error"] != null) { <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<div class="card mb-4">
+	<form asp-action="Index" method="get" id="financial-filter">
+		<div class="card-body">
+			<div class="row align-items-end">
+				<div class="col-lg-4 mb-2">
+					<label class="form-label fw-semibold" for="period">
+						Period
+					</label>
+						<select name="period" id="period" class="form-control">
+							<option value="today" selected="@(Model.Period == "today")">
+								Today
+							</option>
+							<option value="yesterday" selected="@(Model.Period == "yesterday")">
+								Yesterday
+							</option>
+							<option value="three-days-ago" selected="@(Model.Period == "three-days-ago")">
+								Three days ago
+							</option>
+							<option value="this-week" selected="@(Model.Period == "this-week")">
+								This week
+							</option>
+							<option value="last-week" selected="@(Model.Period == "last-week")">
+								Last week
+							</option>
+							<option value="last-2-weeks" selected="@(Model.Period == "last-2-weeks")">
+								Last 14 days
+							</option>
+							<option value="this-month" selected="@(Model.Period == "this-month")">
+								This month
+							</option>
+							<option value="last-month" selected="@(Model.Period == "last-month")">
+								Last month
+							</option>
+							<option value="this-year" selected="@(Model.Period == "this-year")">
+								This year
+							</option>
+							<option value="last-year" selected="@(Model.Period == "last-year")">
+								Last year
+							</option>
+							<option value="all" selected="@(Model.Period == "all")">
+								All recorded time
+							</option>
+							<option value="custom" selected="@(Model.Period == "custom")">
+								Custom range
+							</option>
+						</select>
+				</div>
+					<div class="col-lg-3 mb-2 custom-date">
+						<label class="form-label fw-semibold">
+							From
+						</label>
+							<input type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" class="form-control" />
+					</div>
+					<div class="col-lg-3 mb-2 custom-date">
+						<label class="form-label fw-semibold">
+							To
+						</label>
+						<input type="date" name="to" value="@Model.To.ToString("yyyy-MM-dd")" class="form-control" />
+					</div>
+					<div class="col-lg-2 mb-2">
+						<button class="btn btn-primary w-100" type="submit">
+							<i class="fas fa-filter me-1">
+
+							</i> 
+							Apply
+						</button>
+					</div>
+			/div>
+		</div>
+	</form>
+</div>
+
+<div class="row">
+	<div class="col-lg-3 col-md-6 mb-4">
+		<div class="metric-card metric-success">
+			<div>
+				<span>Net Sales</span><h2>@s.NetSales.ToString("N2")</h2><small>Sales less customer returns</small>
+			</div>
+			<i class="fas fa-cash-register"></i>
+		</div>
+	</div>
+	<div class="col-lg-3 col-md-6 mb-4">
+		<div class="metric-card metric-primary">
+			<div>
+				<span>Gross Profit</span><h2>@s.GrossProfit.ToString("N2")</h2><small>@s.GrossProfitMarginPercent.ToString("N1")% margin</small>
+			</div>
+			<i class="fas fa-chart-bar"></i>
+		</div>
+	</div>
+	<div class="col-lg-3 col-md-6 mb-4">
+		<div class="metric-card @(s.NetProfit >= 0 ? "metric-info" : "metric-danger")">
+			<div>
+				<span>Net Profit</span><h2>@s.NetProfit.ToString("N2")</h2><small>@s.NetProfitMarginPercent.ToString("N1")% margin after expenses</small>
+			</div>
+			<i class="fas fa-sack-dollar"></i></div>
+	</div>
+	<div class="col-lg-3 col-md-6 mb-4">
+		<div class="metric-card @(s.NetCashFlow >= 0 ? "metric-warning" : "metric-danger")">
+			<div>
+				<span>Cash Flow</span><h2>@s.NetCashFlow.ToString("N2")</h2><small>Cash movement for the period</small>
+			</div><i class="fas fa-wallet"></i>
+		</div>
+	</div>
+div>
+<div class="row">
+	<div class="col-lg-7 mb-4">
+		<div class="card h-100">
+			<div class="card-header">
+				<h3 class="card-title">
+					<i class="fas fa-chart-pie text-primary-teal"></i> Profitability</h3>
+			</div>
+			<div class="card-body">
+				<div class="financial-line">
+					<span>Gross sales</span><strong class="text-success">@s.Sales.ToString("N2") EGP</strong>
+				</div>
+				<div class="financial-line">
+					<span>Customer returns</span><strong class="text-danger">− @s.SalesReturns.ToString("N2") EGP</strong>
+				</div>
+				<div class="financial-line total">
+					<span>Net sales</span><strong>@s.NetSales.ToString("N2") EGP</strong>
+				</div>
+					<div class="financial-line">
+						<span>Cost of goods sold</span><strong>− @s.CostOfGoodsSold.ToString("N2") EGP</strong>
+					</div>
+					<div class="financial-line total">
+						<span>Gross profit</span><strong class="@(s.GrossProfit >= 0 ? "text-success" : "text-danger")">@s.GrossProfit.ToString("N2") EGP</strong>
+					</div>
+					<div class="financial-line">
+						<span>Operating expenses</span><strong class="text-danger">− @s.Expenses.ToString("N2") EGP</strong>
+					</div>
+					<div class="financial-line total">
+						<span>Net profit</span><strong class="@(s.NetProfit >= 0 ? "text-success" : "text-danger")">@s.NetProfit.ToString("N2") EGP</strong>
+					</div>
+			</div>
+		</div>
+	</div>
+					<div class="col-lg-5 mb-4">
+						<div class="card h-100">
+							<div class="card-header">
+								<h3 class="card-title">
+									<i class="fas fa-arrows-rotate text-primary-teal"></i> Restocking & cash</h3>
+									</div>
+									<div class="card-body">
+										<div class="financial-line">
+											<span>Restocking purchases</span><strong class="text-danger">− @s.Purchases.ToString("N2") EGP</strong>
+										</div>
+												<div class="financial-line">
+													<span>Supplier returns</span><strong class="text-success">+ @s.PurchaseReturns.ToString("N2") EGP</strong>
+												</div>
+												<div class="financial-line total">
+													<span>Net purchases</span><strong>@s.NetPurchases.ToString("N2") EGP</strong>
+												</div>
+												<div class="financial-line total">
+													<span>Net cash flow</span><strong class="@(s.NetCashFlow >= 0 ? "text-success" : "text-danger")">@s.NetCashFlow.ToString("N2") EGP</strong>
+												</div><p class="text-muted small mt-4 mb-0">Cash flow includes restocking spend; it is intentionally different from profit.</p>
+									</div>
+						</div>
+					</div>
+</div>
+@section Scripts 
+{  <script>
+	 const period = document.getElementById('period'); 
+	 const dates = document.querySelectorAll('.custom-date'); 
+	 function toggleDates() { dates.forEach(x => x.style.display = period.value === 'custom' ? '' : 'none'); } period.addEventListener('change', toggleDates); toggleDates();
+	</script> 
+}
+ *@
+
+@model Pharmacy.ViewModels.Financial.FinancialReportViewModel
+
+@{
+    ViewData["Title"] = "Financial Insights";
+    var s = Model.Summary;
+}
+
+<div class="page-header mb-4">
+    <div class="page-title d-flex align-items-center">
+        <div class="page-icon me-3">
+            <i class="fas fa-chart-line"></i>
+        </div>
+
+        <div>
+            <h2 class="mb-1">Financial Insights</h2>
+
+            <p class="text-muted mb-0">
+                @Model.PeriodLabel :
+                <strong>@Model.From.ToString("dd MMM yyyy")</strong>
+                -
+                <strong>@Model.To.ToString("dd MMM yyyy")</strong>
+            </p>
+        </div>
+    </div>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <form asp-action="Index" method="get" id="financial-filter">
+
+            <div class="row align-items-end">
+
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label fw-bold">
+                        Period
+                    </label>
+
+                    <select class="form-select" name="period" id="period">
+
+                        <option value="today" selected="@(Model.Period == "today")">Today</option>
+
+                        <option value="yesterday" selected="@(Model.Period == "yesterday")">
+                            Yesterday
+                        </option>
+
+                        <option value="three-days-ago" selected="@(Model.Period == "three-days-ago")">
+                            Three days ago
+                        </option>
+
+                        <option value="this-week" selected="@(Model.Period == "this-week")">
+                            This Week
+                        </option>
+
+                        <option value="last-week" selected="@(Model.Period == "last-week")">
+                            Last Week
+                        </option>
+
+                        <option value="last-2-weeks" selected="@(Model.Period == "last-2-weeks")">
+                            Last 14 Days
+                        </option>
+
+                        <option value="this-month" selected="@(Model.Period == "this-month")">
+                            This Month
+                        </option>
+
+                        <option value="last-month" selected="@(Model.Period == "last-month")">
+                            Last Month
+                        </option>
+
+                        <option value="this-year" selected="@(Model.Period == "this-year")">
+                            This Year
+                        </option>
+
+                        <option value="last-year" selected="@(Model.Period == "last-year")">
+                            Last Year
+                        </option>
+
+                        <option value="all" selected="@(Model.Period == "all")">
+                            All Time
+                        </option>
+
+                        <option value="custom" selected="@(Model.Period == "custom")">
+                            Custom Range
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-lg-3 custom-date mb-3">
+                    <label class="form-label fw-bold">From</label>
+
+                    <input class="form-control"
+                           type="date"
+                           name="from"
+                           value="@Model.From.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="col-lg-3 custom-date mb-3">
+                    <label class="form-label fw-bold">To</label>
+
+                    <input class="form-control"
+                           type="date"
+                           name="to"
+                           value="@Model.To.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <div class="col-lg-2 mb-3">
+
+                    <button class="btn btn-primary w-100" type="submit">
+                        <i class="fas fa-filter me-2"></i>
+                        Apply
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="metric-card metric-success">
+            <div>
+                <span>Net Sales</span>
+                <h2>@s.NetSales.ToString("N2")</h2>
+                <small>Sales less customer returns</small>
+            </div>
+
+            <i class="fas fa-cash-register"></i>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="metric-card metric-primary">
+            <div>
+                <span>Gross Profit</span>
+                <h2>@s.GrossProfit.ToString("N2")</h2>
+                <small>@s.GrossProfitMarginPercent.ToString("N1")% Margin</small>
+            </div>
+
+            <i class="fas fa-chart-bar"></i>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="metric-card @(s.NetProfit >= 0 ? "metric-info" : "metric-danger")">
+
+            <div>
+                <span>Net Profit</span>
+
+                <h2>@s.NetProfit.ToString("N2")</h2>
+
+                <small>
+                    @s.NetProfitMarginPercent.ToString("N1")% Margin
+                </small>
+
+            </div>
+
+            <i class="fas fa-sack-dollar"></i>
+
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-4">
+
+        <div class="metric-card @(s.NetCashFlow >= 0 ? "metric-warning" : "metric-danger")">
+
+            <div>
+
+                <span>Cash Flow</span>
+
+                <h2>@s.NetCashFlow.ToString("N2")</h2>
+
+                <small>Cash movement during selected period</small>
+
+            </div>
+
+            <i class="fas fa-wallet"></i>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-lg-7 mb-4">
+
+        <div class="card h-100">
+
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-chart-pie text-primary me-2"></i>
+                    Profitability
+                </h4>
+            </div>
+
+            <div class="card-body">
+
+                <div class="financial-line">
+                    <span>Gross Sales</span>
+                    <strong class="text-success">@s.Sales.ToString("N2") EGP</strong>
+                </div>
+
+                <div class="financial-line">
+                    <span>Customer Returns</span>
+                    <strong class="text-danger">
+                        - @s.SalesReturns.ToString("N2") EGP
+                    </strong>
+                </div>
+
+                <div class="financial-line total">
+                    <span>Net Sales</span>
+                    <strong>@s.NetSales.ToString("N2") EGP</strong>
+                </div>
+
+                <div class="financial-line">
+                    <span>Cost Of Goods Sold</span>
+                    <strong>- @s.CostOfGoodsSold.ToString("N2") EGP</strong>
+                </div>
+
+                <div class="financial-line total">
+                    <span>Gross Profit</span>
+
+                    <strong class="@(s.GrossProfit >= 0 ? "text-success" : "text-danger")">
+
+                        @s.GrossProfit.ToString("N2") EGP
+
+                    </strong>
+                </div>
+
+                <div class="financial-line">
+                    <span>Operating Expenses</span>
+
+                    <strong class="text-danger">
+                        - @s.Expenses.ToString("N2") EGP
+                    </strong>
+                </div>
+
+                <div class="financial-line total">
+
+                    <span>Net Profit</span>
+
+                    <strong class="@(s.NetProfit >= 0 ? "text-success" : "text-danger")">
+
+                        @s.NetProfit.ToString("N2") EGP
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-5 mb-4">
+
+        <div class="card h-100">
+
+            <div class="card-header">
+
+                <h4 class="mb-0">
+
+                    <i class="fas fa-arrows-rotate text-primary me-2"></i>
+
+                    Restocking & Cash
+
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="financial-line">
+                    <span>Purchases</span>
+
+                    <strong class="text-danger">
+                        - @s.Purchases.ToString("N2") EGP
+                    </strong>
+                </div>
+
+                <div class="financial-line">
+                    <span>Supplier Returns</span>
+
+                    <strong class="text-success">
+                        + @s.PurchaseReturns.ToString("N2") EGP
+                    </strong>
+                </div>
+
+                <div class="financial-line total">
+
+                    <span>Net Purchases</span>
+
+                    <strong>
+
+                        @s.NetPurchases.ToString("N2") EGP
+
+                    </strong>
+
+                </div>
+
+                <div class="financial-line total">
+
+                    <span>Net Cash Flow</span>
+
+                    <strong class="@(s.NetCashFlow >= 0 ? "text-success" : "text-danger")">
+
+                        @s.NetCashFlow.ToString("N2") EGP
+
+                    </strong>
+
+                </div>
+
+                <p class="text-muted small mt-4 mb-0">
+
+                    Cash flow includes purchases and supplier returns.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        const period = document.getElementById("period");
+
+        const dates = document.querySelectorAll(".custom-date");
+
+        function toggleDates() {
+
+            dates.forEach(d => {
+
+                d.style.display =
+                    period.value === "custom"
+                        ? ""
+                        : "none";
+
+            });
+
+        }
+
+        period.addEventListener("change", toggleDates);
+
+        toggleDates();
+
+    </script>
+
+}

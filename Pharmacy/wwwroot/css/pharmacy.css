@@ -707,6 +707,9 @@ label {
 .metric-info { background: linear-gradient(135deg, #0891b2, #06b6d4); }
 .metric-danger { background: linear-gradient(135deg, #dc2626, #f43f5e); }
 
+.financial-line { display: flex; justify-content: space-between; gap: 20px; padding: 12px 0; border-bottom: 1px solid #edf2f7; }
+.financial-line.total { font-size: 1.04rem; font-weight: 600; border-bottom: 2px solid #cbd5e1; }
+
 @media (max-width: 576px) {
     .dashboard-hero { padding: 24px; }
     .dashboard-hero-icon { display: none; }

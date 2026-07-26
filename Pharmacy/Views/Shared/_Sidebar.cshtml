@@ -22,7 +22,7 @@
                 <li class="nav-item"><a asp-controller="Category" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-tags"></i><p>Categories</p></a></li>
                 <li class="nav-item"><a asp-controller="Supplier" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-truck"></i><p>Suppliers</p></a></li>
                 <li class="nav-item"><a asp-controller="Expense" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-money-bill-wave"></i><p>Expenses</p></a></li>
-                <li class="nav-item"><a asp-controller="Financial" asp-action="DailySummary" class="nav-link"><i class="nav-icon fas fa-chart-line"></i><p>Financial Summary</p></a></li>
+                <li class="nav-item"><a asp-controller="Financial" asp-action="Index" class="nav-link"><i class="nav-icon fas fa-chart-line"></i><p>Financial Insights</p></a></li>
             }
             <li class="nav-header">ACCOUNT</li>
             <li class="nav-item"><form asp-controller="Auth" asp-action="Logout" method="post">@Html.AntiForgeryToken()<button type="submit" class="nav-link btn btn-link text-left w-100"><i class="nav-icon fas fa-sign-out-alt"></i><p>Logout</p></button></form></li>
